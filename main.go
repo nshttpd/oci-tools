@@ -29,7 +29,7 @@
 
 package main
 
-import "github.com/nshttpd/oci-tools/cmd"
+import "github.com/nshttpd/oci-tool/cmd"
 
 func main() {
 	cmd.Execute()
