@@ -36,23 +36,37 @@ import (
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/nshttpd/oci-tool/oci"
 )
 
-var cfgFile string
+const defaultProfile = "DEFAULT"
+
+var (
+	cfgFile string
+	region string
+	profile string
+	compartment string
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "foo",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Use:   "oci-tool",
+	Short: "User Friendly Interactions with the Oracle OCI API",
+	Long: `User friendly interactions with the Oracle OCI API to extract information 
+that one may need or want on a daily basis. Unlike the OCI CLI application
+this tool will bundle and concatenate information that is handy into one
+execution for the user. For example: 
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	oci-tool compute images
+
+will gather all images across all compartments and produce output. The user can 
+filter to only a single compartment if needed. It will also get the vnics and 
+addresses for the hosts.
+`,
+	PersistentPreRun: func(cobra *cobra.Command, args []string) {
+		v := cobra.Flag("profile").Value
+		oci.CreateClient(v.String())
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -70,7 +84,10 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.foo.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.oci/config)")
+	rootCmd.PersistentFlags().StringVar(&region, "region", "", "OCI region")
+	rootCmd.PersistentFlags().StringVar(&profile, "profile", defaultProfile, "Config File Profile")
+	rootCmd.PersistentFlags().StringVar(&compartment, "compartment", "", "Compartment Name")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -92,7 +109,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".foo" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".foo")
+		viper.SetConfigName(".oci/config")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
