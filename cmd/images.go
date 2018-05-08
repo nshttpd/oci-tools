@@ -32,24 +32,27 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
-	"github.com/oracle/oci-go-sdk/core"
-	"os"
 	"context"
+	"github.com/oracle/oci-go-sdk/core"
+	"github.com/spf13/cobra"
+	"os"
+	"text/template"
 )
+
+const defaultListImageTmpl = "{{ .DisplayName }}   {{ .Id }}\n"
 
 var operatingSystem string
 
 // imagesCmd represents the images command
 var imagesCmd = &cobra.Command{
-	Use:   "images",
+	Use:     "images",
 	Aliases: []string{"image"},
-	Short: "image api actions",
-	Long: `Run actions against the images core api`,
+	Short:   "image api actions",
+	Long:    `Run actions against the images core api`,
 }
 
 var listImagesCmd = &cobra.Command{
-	Use: "list",
+	Use:   "list",
 	Short: "list images in a tenancies region",
 	Long: `List images available in a tenancies region
 additional filter can be applied if necessary, example:
@@ -79,18 +82,29 @@ func listImages(client core.ComputeClient) {
 	if err != nil {
 		fmt.Printf("error fetching tenancy ocid\n")
 		fmt.Printf("error: %v\n", err)
-	}
-	req := core.ListImagesRequest{CompartmentId: &cid}
-	if operatingSystem != "" {
-		req.OperatingSystem = &operatingSystem
-	}
-	res, err := client.ListImages(context.Background(), req)
-	if err != nil {
-		fmt.Printf("error fetching image list\n")
-		fmt.Printf("error: %v\n", err)
 	} else {
-		for _, i := range res.Items {
-			fmt.Printf("name : %s\n", *i.DisplayName)
+		req := core.ListImagesRequest{CompartmentId: &cid}
+		if operatingSystem != "" {
+			req.OperatingSystem = &operatingSystem
+		}
+		res, err := client.ListImages(context.Background(), req)
+		if err != nil {
+			fmt.Printf("error fetching image list\n")
+			fmt.Printf("error: %v\n", err)
+		} else {
+			tmpl, err := template.New("imageList").Parse(defaultListImageTmpl)
+			if err == nil {
+				for _, i := range res.Items {
+					err := tmpl.Execute(os.Stdout, i)
+					if err != nil {
+						fmt.Println("error processing item for template")
+						fmt.Printf("error : %v\n", err)
+					}
+				}
+			} else {
+				fmt.Println("error setting up output template")
+				fmt.Printf("error : %v\n", err)
+			}
 		}
 	}
 }
