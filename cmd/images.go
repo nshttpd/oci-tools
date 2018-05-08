@@ -38,12 +38,23 @@ import (
 	"context"
 )
 
+var operatingSystem string
+
 // imagesCmd represents the images command
 var imagesCmd = &cobra.Command{
 	Use:   "images",
-	Short: "get a list of images for a region",
-	Long: `get a list of images for a region in a user friendly output
-format.`,
+	Aliases: []string{"image"},
+	Short: "image api actions",
+	Long: `Run actions against the images core api`,
+}
+
+var listImagesCmd = &cobra.Command{
+	Use: "list",
+	Short: "list images in a tenancies region",
+	Long: `List images available in a tenancies region
+additional filter can be applied if necessary, example:
+
+oci-tool compute images list --operating-system "Oracle Linux"`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := core.NewComputeClientWithConfigurationProvider(config)
 		if err != nil {
@@ -58,16 +69,9 @@ format.`,
 
 func init() {
 	computeCmd.AddCommand(imagesCmd)
+	imagesCmd.AddCommand(listImagesCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// imagesCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// imagesCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	imagesCmd.PersistentFlags().StringVar(&operatingSystem, "operating-system", "", "limit images to operating system")
 }
 
 func listImages(client core.ComputeClient) {
@@ -77,6 +81,9 @@ func listImages(client core.ComputeClient) {
 		fmt.Printf("error: %v\n", err)
 	}
 	req := core.ListImagesRequest{CompartmentId: &cid}
+	if operatingSystem != "" {
+		req.OperatingSystem = &operatingSystem
+	}
 	res, err := client.ListImages(context.Background(), req)
 	if err != nil {
 		fmt.Printf("error fetching image list\n")
