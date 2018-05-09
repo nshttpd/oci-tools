@@ -64,7 +64,7 @@ oci-tool compute images list --operating-system "Oracle Linux"`,
 			os.Exit(1)
 		}
 		c.SetRegion(cmd.Flag("region").Value.String())
-		listImages(c)
+		listImages(cmd, c)
 	},
 }
 
@@ -75,30 +75,35 @@ func init() {
 	imagesCmd.PersistentFlags().StringVar(&operatingSystem, "operating-system", "", "limit images to operating system")
 }
 
-func listImages(client core.ComputeClient) {
-	cid, err := config.TenancyOCID()
-	if err != nil {
-		utils.ErrorMsg("error fetchign tenancy ocid", err)
-	} else {
-		req := core.ListImagesRequest{CompartmentId: &cid}
-		if operatingSystem != "" {
-			req.OperatingSystem = &operatingSystem
-		}
-		res, err := client.ListImages(context.Background(), req)
+func listImages(cmd *cobra.Command, client core.ComputeClient) {
+	cid := cmd.Flag("compartment-id").Value.String()
+	if cid == "" {
+		var err error
+		cid, err = config.TenancyOCID()
 		if err != nil {
-			utils.ErrorMsg("error fetching image list", err)
-		} else {
-			tmpl, err := template.New("imageList").Parse(defaultListImageTmpl)
-			if err == nil {
-				for _, i := range res.Items {
-					err := tmpl.Execute(os.Stdout, i)
-					if err != nil {
-						utils.ErrorMsg("error processing item for template", err)
-					}
+			utils.ErrorMsg("error fetching tenancy ocid", err)
+			os.Exit(1)
+		}
+	}
+
+	req := core.ListImagesRequest{CompartmentId: &cid}
+	if operatingSystem != "" {
+		req.OperatingSystem = &operatingSystem
+	}
+	res, err := client.ListImages(context.Background(), req)
+	if err != nil {
+		utils.ErrorMsg("error fetching image list", err)
+	} else {
+		tmpl, err := template.New("imageList").Parse(defaultListImageTmpl)
+		if err == nil {
+			for _, i := range res.Items {
+				err := tmpl.Execute(os.Stdout, i)
+				if err != nil {
+					utils.ErrorMsg("error processing item for template", err)
 				}
-			} else {
-				utils.ErrorMsg("error setting up output template", err)
 			}
+		} else {
+			utils.ErrorMsg("error setting up output template", err)
 		}
 	}
 }
