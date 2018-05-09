@@ -34,22 +34,23 @@ import (
 	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
-	"github.com/spf13/cobra"
 	"github.com/nshttpd/oci-tool/oci"
 	"github.com/oracle/oci-go-sdk/common"
+	"github.com/spf13/cobra"
 )
 
 const (
 	defaultProfile = "DEFAULT"
-	defaultConfig = "/.oci/config"
+	defaultConfig  = "/.oci/config"
 )
 
 var (
-	cfgFile string
-	region string
-	profile string
-	compartment string
-	config common.ConfigurationProvider
+	cfgFile       string
+	region        string
+	profile       string
+	compartment   string
+	compartmentId string
+	config        common.ConfigurationProvider
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -77,10 +78,10 @@ addresses for the hosts.
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		v := cobra.Flag("profile").Value
+		p := cobra.Flag("profile").Value
 		f := cobra.Flag("config").Value
 
-		config = oci.CreateConfig(home + f.String(), v.String())
+		config = oci.CreateConfig(home+f.String(), p.String())
 	},
 }
 
@@ -101,9 +102,9 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&region, "region", "", "OCI region")
 	rootCmd.PersistentFlags().StringVar(&profile, "profile", defaultProfile, "Config File Profile")
 	rootCmd.PersistentFlags().StringVar(&compartment, "compartment", "", "Compartment Name")
+	rootCmd.PersistentFlags().StringVar(&compartmentId, "compartment-id", "", "Compartment ID")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
-
