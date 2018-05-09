@@ -35,7 +35,7 @@ import (
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/nshttpd/oci-tool/oci"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/nshttpd/oci-tool/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -50,7 +50,7 @@ var (
 	profile       string
 	compartment   string
 	compartmentId string
-	config        common.ConfigurationProvider
+	config        oci.ClientConfig
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -75,13 +75,17 @@ addresses for the hosts.
 		}
 		home, err := homedir.Dir()
 		if err != nil {
-			fmt.Println(err)
+			utils.ErrorMsg("error finding users home directory", err)
 			os.Exit(1)
 		}
 		p := cobra.Flag("profile").Value
 		f := cobra.Flag("config").Value
 
-		config = oci.CreateConfig(home+f.String(), p.String())
+		config, err = oci.CreateConfig(home+f.String(), p.String())
+		if err != nil {
+			utils.ErrorMsg("error getting OCI config", err)
+			os.Exit(1)
+		}
 	},
 }
 

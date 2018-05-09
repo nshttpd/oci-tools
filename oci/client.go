@@ -1,16 +1,25 @@
 package oci
 
 import (
-	"fmt"
 	"github.com/oracle/oci-go-sdk/common"
 )
 
-func CreateConfig(file string, profile string) common.ConfigurationProvider {
-	config, err := common.ConfigurationProviderFromFileWithProfile(file, profile, "")
+type ClientConfig struct {
+	config common.ConfigurationProvider
+}
+
+func CreateConfig(file string, profile string) (ClientConfig, error) {
+	c, err := common.ConfigurationProviderFromFileWithProfile(file, profile, "")
 	if err != nil {
-		fmt.Printf("error creating config for profile %s from file %s\n", profile, file)
-		fmt.Printf("error : %v\n", err)
-		config = nil
+		return ClientConfig{}, err
 	}
-	return config
+	return ClientConfig{config: c}, nil
+}
+
+func (c *ClientConfig) Config() common.ConfigurationProvider {
+	return c.config
+}
+
+func (c *ClientConfig) TenancyOCID() (string, error) {
+	return c.config.TenancyOCID()
 }

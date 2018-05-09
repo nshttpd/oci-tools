@@ -58,7 +58,7 @@ additional filter can be applied if necessary, example:
 
 oci-tool compute images list --operating-system "Oracle Linux"`,
 	Run: func(cmd *cobra.Command, args []string) {
-		c, err := core.NewComputeClientWithConfigurationProvider(config)
+		c, err := core.NewComputeClientWithConfigurationProvider(config.Config())
 		if err != nil {
 			utils.ErrorMsg("error creating Compute Client", err)
 			os.Exit(1)
