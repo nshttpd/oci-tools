@@ -62,7 +62,8 @@ that one may need or want on a daily basis. Unlike the OCI CLI application
 this tool will bundle and concatenate information that is handy into one
 execution for the user. For example: 
 
-	oci-tool compute images
+	oci-tool --region us-ashburn-1 compute images list
+	oci-tool --region us-phoenix-1 compute instances list
 
 will gather all images across all compartments and produce output. The user can 
 filter to only a single compartment if needed. It will also get the vnics and 

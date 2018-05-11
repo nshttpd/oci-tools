@@ -36,3 +36,11 @@ func (c *Compartments) CompartmentId(cname string) *string {
 	}
 	return nil
 }
+
+func (c *Compartments) CompartmentIds() []string {
+	r := make([]string, len(c.compartments))
+	for _, c := range c.compartments {
+		r = append(r, *c.Id)
+	}
+	return r
+}
