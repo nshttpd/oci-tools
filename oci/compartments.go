@@ -2,6 +2,7 @@ package oci
 
 import (
 	"context"
+	"fmt"
 	"github.com/oracle/oci-go-sdk/identity"
 	"strings"
 )
@@ -39,8 +40,8 @@ func (c *Compartments) CompartmentId(cname string) *string {
 
 func (c *Compartments) CompartmentIds() []string {
 	r := make([]string, len(c.compartments))
-	for _, c := range c.compartments {
-		r = append(r, *c.Id)
+	for i, c := range c.compartments {
+		r[i] = *c.Id
 	}
 	return r
 }

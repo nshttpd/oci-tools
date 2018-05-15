@@ -93,11 +93,9 @@ func listInstances(cmd *cobra.Command, client core.ComputeClient) {
 		}
 	}
 
-	fmt.Printf("len cids : %d", len(cids))
+	var instances []core.Instance
 
-	// figure out a better way to size this?
-	instances := make([]core.Instance, len(cids))
-
+	// can maybe go fun() this to make it faster?
 	for _, cid = range cids {
 		req := core.ListInstancesRequest{CompartmentId: &cid}
 		i, err := client.ListInstances(context.Background(), req)
