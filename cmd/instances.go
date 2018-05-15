@@ -41,7 +41,7 @@ import (
 	"text/template"
 )
 
-const defaultListInstanceTmpl = "{{ .DisplayName }}   {{ .LifecycleState }}\n"
+const defaultListInstanceTmpl = "{{ .DisplayName }} {{ .LifecycleState }}\n\t{{ .Id }}"
 
 // instancesCmd represents the instances command
 var instancesCmd = &cobra.Command{
@@ -93,6 +93,7 @@ func listInstances(cmd *cobra.Command, client core.ComputeClient) {
 		}
 	}
 
+	// get the instances in each Compartment
 	var instances []core.Instance
 
 	// can maybe go fun() this to make it faster?
@@ -101,6 +102,7 @@ func listInstances(cmd *cobra.Command, client core.ComputeClient) {
 		i, err := client.ListInstances(context.Background(), req)
 		if err != nil {
 			utils.ErrorMsg(fmt.Sprintf("error fetching instances for cid : %s", cid), err)
+			return
 		} else {
 			for _, inst := range i.Items {
 				instances = append(instances, inst)
@@ -108,7 +110,7 @@ func listInstances(cmd *cobra.Command, client core.ComputeClient) {
 		}
 	}
 
-	tmpl, err := template.New("imageList").Parse(defaultListImageTmpl)
+	tmpl, err := template.New("imageList").Parse(defaultListInstanceTmpl)
 	if err == nil {
 		for _, i := range instances {
 			err := tmpl.Execute(os.Stdout, i)
