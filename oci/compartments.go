@@ -2,7 +2,6 @@ package oci
 
 import (
 	"context"
-	"fmt"
 	"github.com/oracle/oci-go-sdk/identity"
 	"strings"
 )
@@ -11,7 +10,7 @@ type Compartments struct {
 	compartments []identity.Compartment
 }
 
-func GetCompartments(c ClientConfig) (Compartments, error) {
+func (c *ClientConfig) GetCompartments() (Compartments, error) {
 	cs := Compartments{}
 	var err error
 	client, err := identity.NewIdentityClientWithConfigurationProvider(c.config)
@@ -38,10 +37,10 @@ func (c *Compartments) CompartmentId(cname string) *string {
 	return nil
 }
 
-func (c *Compartments) CompartmentIds() []string {
-	r := make([]string, len(c.compartments))
+func (c *Compartments) CompartmentIds() []*string {
+	r := make([]*string, len(c.compartments))
 	for i, c := range c.compartments {
-		r[i] = *c.Id
+		r[i] = c.Id
 	}
 	return r
 }

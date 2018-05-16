@@ -32,16 +32,14 @@ package cmd
 import (
 	"fmt"
 
-	"context"
 	"github.com/nshttpd/oci-tool/oci"
 	"github.com/nshttpd/oci-tool/utils"
-	"github.com/oracle/oci-go-sdk/core"
 	"github.com/spf13/cobra"
 	"os"
 	"text/template"
 )
 
-const defaultListInstanceTmpl = "{{ .DisplayName }} {{ .LifecycleState }}\n\t{{ .Id }}"
+const defaultListInstanceTmpl = "{{ .Instance.DisplayName }} {{ .Instance.LifecycleState }}\n\t{{ .Instance.Id }}\n"
 
 // instancesCmd represents the instances command
 var instancesCmd = &cobra.Command{
@@ -65,12 +63,7 @@ all of them unless a compartment-id is specified.
 	oci-tool compute instances list
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		c, err := core.NewComputeClientWithConfigurationProvider(config.Config())
-		if err != nil {
-			utils.ErrorMsg("error creating client", err)
-		} else {
-			listInstances(cmd, c)
-		}
+		listInstances(cmd)
 	},
 }
 
@@ -79,13 +72,13 @@ func init() {
 	instancesCmd.AddCommand(listInstancesCmd)
 }
 
-func listInstances(cmd *cobra.Command, client core.ComputeClient) {
+func listInstances(cmd *cobra.Command) {
 	cid := cmd.Flag("compartment-id").Value.String()
-	var cids []string
+	var cids []*string
 	if cid != "" {
-		cids = []string{cid}
+		cids = []*string{&cid}
 	} else {
-		comparts, err := oci.GetCompartments(config)
+		comparts, err := config.GetCompartments()
 		if err != nil {
 			utils.ErrorMsg("error fetching compartments from API", err)
 		} else {
@@ -94,25 +87,22 @@ func listInstances(cmd *cobra.Command, client core.ComputeClient) {
 	}
 
 	// get the instances in each Compartment
-	var instances []core.Instance
+	var computes []oci.Compute
 
-	// can maybe go fun() this to make it faster?
-	for _, cid = range cids {
-		req := core.ListInstancesRequest{CompartmentId: &cid}
-		i, err := client.ListInstances(context.Background(), req)
+	// can maybe goroutines this to make it faster?
+	for _, id := range cids {
+		cs, err := config.GetComputeInstances(id)
 		if err != nil {
-			utils.ErrorMsg(fmt.Sprintf("error fetching instances for cid : %s", cid), err)
+			utils.ErrorMsg(fmt.Sprintf("error fetching Computes for cid : %s", *id), err)
 			return
 		} else {
-			for _, inst := range i.Items {
-				instances = append(instances, inst)
-			}
+			computes = append(computes, cs...)
 		}
 	}
 
 	tmpl, err := template.New("imageList").Parse(defaultListInstanceTmpl)
 	if err == nil {
-		for _, i := range instances {
+		for _, i := range computes {
 			err := tmpl.Execute(os.Stdout, i)
 			if err != nil {
 				utils.ErrorMsg("error processing item for template", err)
