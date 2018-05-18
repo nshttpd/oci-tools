@@ -34,8 +34,8 @@ import (
 	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
-	"github.com/nshttpd/oci-tool/oci"
-	"github.com/nshttpd/oci-tool/utils"
+	"github.com/nshttpd/oci-tools/oci"
+	"github.com/nshttpd/oci-tools/utils"
 	"github.com/spf13/cobra"
 )
 

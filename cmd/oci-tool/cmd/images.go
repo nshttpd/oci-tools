@@ -31,7 +31,7 @@ package cmd
 
 import (
 	"context"
-	"github.com/nshttpd/oci-tool/utils"
+	"github.com/nshttpd/oci-tools/utils"
 	"github.com/oracle/oci-go-sdk/core"
 	"github.com/spf13/cobra"
 	"os"
