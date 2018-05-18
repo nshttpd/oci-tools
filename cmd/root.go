@@ -34,22 +34,23 @@ import (
 	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
-	"github.com/spf13/cobra"
 	"github.com/nshttpd/oci-tool/oci"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/nshttpd/oci-tool/utils"
+	"github.com/spf13/cobra"
 )
 
 const (
 	defaultProfile = "DEFAULT"
-	defaultConfig = "/.oci/config"
+	defaultConfig  = "/.oci/config"
 )
 
 var (
-	cfgFile string
-	region string
-	profile string
-	compartment string
-	config common.ConfigurationProvider
+	cfgFile       string
+	region        string
+	profile       string
+	compartment   string
+	compartmentId string
+	config        oci.ClientConfig
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -61,7 +62,8 @@ that one may need or want on a daily basis. Unlike the OCI CLI application
 this tool will bundle and concatenate information that is handy into one
 execution for the user. For example: 
 
-	oci-tool compute images
+	oci-tool --region us-ashburn-1 compute images list
+	oci-tool --region us-phoenix-1 compute instances list
 
 will gather all images across all compartments and produce output. The user can 
 filter to only a single compartment if needed. It will also get the vnics and 
@@ -74,13 +76,17 @@ addresses for the hosts.
 		}
 		home, err := homedir.Dir()
 		if err != nil {
-			fmt.Println(err)
+			utils.ErrorMsg("error finding users home directory", err)
 			os.Exit(1)
 		}
-		v := cobra.Flag("profile").Value
+		p := cobra.Flag("profile").Value
 		f := cobra.Flag("config").Value
 
-		config = oci.CreateConfig(home + f.String(), v.String())
+		config, err = oci.CreateConfig(home+f.String(), p.String())
+		if err != nil {
+			utils.ErrorMsg("error getting OCI config", err)
+			os.Exit(1)
+		}
 	},
 }
 
@@ -101,9 +107,9 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&region, "region", "", "OCI region")
 	rootCmd.PersistentFlags().StringVar(&profile, "profile", defaultProfile, "Config File Profile")
 	rootCmd.PersistentFlags().StringVar(&compartment, "compartment", "", "Compartment Name")
+	rootCmd.PersistentFlags().StringVar(&compartmentId, "compartment-id", "", "Compartment ID")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
-

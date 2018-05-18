@@ -30,9 +30,8 @@
 package cmd
 
 import (
-	"fmt"
-
 	"context"
+	"github.com/nshttpd/oci-tool/utils"
 	"github.com/oracle/oci-go-sdk/core"
 	"github.com/spf13/cobra"
 	"os"
@@ -59,14 +58,13 @@ additional filter can be applied if necessary, example:
 
 oci-tool compute images list --operating-system "Oracle Linux"`,
 	Run: func(cmd *cobra.Command, args []string) {
-		c, err := core.NewComputeClientWithConfigurationProvider(config)
+		c, err := core.NewComputeClientWithConfigurationProvider(config.Config())
 		if err != nil {
-			fmt.Printf("error creating Compute Client\n")
-			fmt.Printf("error : %v\n", err)
+			utils.ErrorMsg("error creating Compute Client", err)
 			os.Exit(1)
 		}
 		c.SetRegion(cmd.Flag("region").Value.String())
-		listImages(c)
+		listImages(cmd, c)
 	},
 }
 
@@ -77,34 +75,35 @@ func init() {
 	imagesCmd.PersistentFlags().StringVar(&operatingSystem, "operating-system", "", "limit images to operating system")
 }
 
-func listImages(client core.ComputeClient) {
-	cid, err := config.TenancyOCID()
-	if err != nil {
-		fmt.Printf("error fetching tenancy ocid\n")
-		fmt.Printf("error: %v\n", err)
-	} else {
-		req := core.ListImagesRequest{CompartmentId: &cid}
-		if operatingSystem != "" {
-			req.OperatingSystem = &operatingSystem
-		}
-		res, err := client.ListImages(context.Background(), req)
+func listImages(cmd *cobra.Command, client core.ComputeClient) {
+	cid := cmd.Flag("compartment-id").Value.String()
+	if cid == "" {
+		var err error
+		cid, err = config.TenancyOCID()
 		if err != nil {
-			fmt.Printf("error fetching image list\n")
-			fmt.Printf("error: %v\n", err)
-		} else {
-			tmpl, err := template.New("imageList").Parse(defaultListImageTmpl)
-			if err == nil {
-				for _, i := range res.Items {
-					err := tmpl.Execute(os.Stdout, i)
-					if err != nil {
-						fmt.Println("error processing item for template")
-						fmt.Printf("error : %v\n", err)
-					}
+			utils.ErrorMsg("error fetching tenancy ocid", err)
+			os.Exit(1)
+		}
+	}
+
+	req := core.ListImagesRequest{CompartmentId: &cid}
+	if operatingSystem != "" {
+		req.OperatingSystem = &operatingSystem
+	}
+	res, err := client.ListImages(context.Background(), req)
+	if err != nil {
+		utils.ErrorMsg("error fetching image list", err)
+	} else {
+		tmpl, err := template.New("imageList").Parse(defaultListImageTmpl)
+		if err == nil {
+			for _, i := range res.Items {
+				err := tmpl.Execute(os.Stdout, i)
+				if err != nil {
+					utils.ErrorMsg("error processing item for template", err)
 				}
-			} else {
-				fmt.Println("error setting up output template")
-				fmt.Printf("error : %v\n", err)
 			}
+		} else {
+			utils.ErrorMsg("error setting up output template", err)
 		}
 	}
 }
