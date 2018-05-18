@@ -66,3 +66,7 @@ func (cc *ClientConfig) GetVnics(i core.Instance) ([]core.Vnic, error) {
 func (c Compute) Instance() core.Instance {
 	return c.instance
 }
+
+func (c Compute) Vnics() []core.Vnic {
+	return c.vnics
+}

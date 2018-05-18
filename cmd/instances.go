@@ -39,7 +39,10 @@ import (
 	"text/template"
 )
 
-const defaultListInstanceTmpl = "{{ .Instance.DisplayName }} {{ .Instance.LifecycleState }}\n\t{{ .Instance.Id }}\n"
+const defaultListInstanceTmpl = `{{ .Instance.DisplayName }} {{ .Instance.LifecycleState }}
+{{ range $key, $value := .Vnics }}- {{ .PublicIp }}	- {{ .PrivateIp }}{{ end }}
+	{{ .Instance.Id }}
+`
 
 // instancesCmd represents the instances command
 var instancesCmd = &cobra.Command{
