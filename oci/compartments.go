@@ -44,3 +44,16 @@ func (c *Compartments) CompartmentIds() []*string {
 	}
 	return r
 }
+
+func (c *Compartments) Compartment(cname string) *string {
+	for _, comp := range c.compartments {
+		if strings.EqualFold(*comp.Name, cname) {
+			return comp.Name
+		}
+	}
+	return nil
+}
+
+func (c *Compartments) Compartments() []identity.Compartment {
+	return c.compartments
+}

@@ -33,5 +33,7 @@ import "fmt"
 
 func ErrorMsg(msg string, err error) {
 	fmt.Println(msg)
-	fmt.Printf("error : %v\n", err)
+	if err != nil {
+		fmt.Printf("error : %v\n", err)
+	}
 }
