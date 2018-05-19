@@ -3,33 +3,36 @@ package oci
 import (
 	"context"
 	"github.com/oracle/oci-go-sdk/core"
+	"github.com/oracle/oci-go-sdk/identity"
 )
 
 // a conglomeration of things that make up a OCI Instance, the instance itself, VNICs
 // and other things later as needed (attached storage etc. etc.)
 type Compute struct {
-	instance core.Instance
-	vnics    []core.Vnic
+	Instance core.Instance
+	Vnics    []core.Vnic
+	Compartment identity.Compartment
 }
 
-func (cc *ClientConfig) GetComputeInstances(cid *string) ([]Compute, error) {
+func (cc *ClientConfig) GetComputeInstances(compartment identity.Compartment) ([]*Compute, error) {
 	client, err := core.NewComputeClientWithConfigurationProvider(cc.Config())
+	client.SetRegion(*cc.Region)
 	if err != nil {
 		// when real logging is here DEBUG stuff can go here.
 		return nil, err
 	}
-	req := core.ListInstancesRequest{CompartmentId: cid}
+	req := core.ListInstancesRequest{CompartmentId: compartment.Id}
 	res, err := client.ListInstances(context.Background(), req)
 	if err != nil {
 		return nil, err
 	}
-	computes := make([]Compute, len(res.Items))
+	computes := make([]*Compute, len(res.Items))
 	for x, i := range res.Items {
 		v, err := cc.GetVnics(i)
 		if err != nil {
 			return nil, err
 		}
-		computes[x] = Compute{instance: i, vnics: v}
+		computes[x] = &Compute{Instance: i, Vnics: v, Compartment: compartment}
 	}
 	return computes, nil
 }
@@ -61,12 +64,4 @@ func (cc *ClientConfig) GetVnics(i core.Instance) ([]core.Vnic, error) {
 	}
 
 	return vnics, nil
-}
-
-func (c Compute) Instance() core.Instance {
-	return c.instance
-}
-
-func (c Compute) Vnics() []core.Vnic {
-	return c.vnics
 }

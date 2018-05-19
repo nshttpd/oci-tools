@@ -6,6 +6,7 @@ import (
 
 type ClientConfig struct {
 	config common.ConfigurationProvider
+	Region *string
 }
 
 func CreateConfig(file string, profile string) (ClientConfig, error) {
