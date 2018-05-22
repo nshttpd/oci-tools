@@ -28,9 +28,12 @@ func (cc *ClientConfig) GetComputeInstances(compartment identity.Compartment) ([
 	}
 	computes := make([]*Compute, len(res.Items))
 	for x, i := range res.Items {
-		v, err := cc.GetVnics(i)
-		if err != nil {
-			return nil, err
+		var v []core.Vnic
+		if i.LifecycleState == core.InstanceLifecycleStateRunning {
+			v, err = cc.GetVnics(i)
+			if err != nil {
+				return nil, err
+			}
 		}
 		computes[x] = &Compute{Instance: i, Vnics: v, Compartment: compartment}
 	}

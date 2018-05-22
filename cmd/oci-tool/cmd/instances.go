@@ -95,7 +95,6 @@ func listInstances(cmd *cobra.Command) {
 		cs, err := config.GetComputeInstances(c)
 		if err != nil {
 			utils.ErrorMsg(fmt.Sprintf("error fetching Computes for cid : %s", *c.Id), err)
-			return
 		} else {
 			computes = append(computes, cs...)
 		}
