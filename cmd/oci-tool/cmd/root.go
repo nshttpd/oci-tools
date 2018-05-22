@@ -87,6 +87,7 @@ addresses for the hosts.
 			utils.ErrorMsg("error getting OCI config", err)
 			os.Exit(1)
 		}
+		config.Region = cobra.Flag("region").Value.String()
 	},
 }
 

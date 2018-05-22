@@ -77,26 +77,24 @@ func init() {
 
 func listInstances(cmd *cobra.Command) {
 	cid := cmd.Flag("compartment-id").Value.String()
-	var cids []*string
-	if cid != "" {
-		cids = []*string{&cid}
-	} else {
-		comparts, err := config.GetCompartments()
-		if err != nil {
-			utils.ErrorMsg("error fetching compartments from API", err)
-		} else {
-			cids = comparts.CompartmentIds()
-		}
+
+	comparts, err := config.GetCompartments()
+	if err != nil {
+		utils.ErrorMsg("error fetching compartments from API", err)
+		return
 	}
 
 	// get the instances in each Compartment
-	var computes []oci.Compute
+	var computes []*oci.Compute
 
 	// can maybe goroutines this to make it faster?
-	for _, id := range cids {
-		cs, err := config.GetComputeInstances(id)
+	for _, c := range comparts.Compartments() {
+		if cid != "" && *c.Id != cid {
+			continue
+		}
+		cs, err := config.GetComputeInstances(c)
 		if err != nil {
-			utils.ErrorMsg(fmt.Sprintf("error fetching Computes for cid : %s", *id), err)
+			utils.ErrorMsg(fmt.Sprintf("error fetching Computes for cid : %s", *c.Id), err)
 			return
 		} else {
 			computes = append(computes, cs...)

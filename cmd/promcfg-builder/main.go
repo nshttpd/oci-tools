@@ -110,7 +110,7 @@ func main() {
 		utils.ErrorMsg("error getting OCI config", err)
 		os.Exit(1)
 	}
-	config.Region = region
+	config.Region = *region
 	computes := getRegionComputes(config)
 
 	writeConfig(computes, tmpl, promCfg)
