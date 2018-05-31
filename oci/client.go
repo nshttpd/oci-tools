@@ -9,11 +9,12 @@ type ClientConfig struct {
 	Region string
 }
 
-func CreateConfig(file string, profile string) (ClientConfig, error) {
+func CreateConfig(file string, profile string, region string) (ClientConfig, error) {
 	c, err := common.ConfigurationProviderFromFileWithProfile(file, profile, "")
 	if err != nil {
 		return ClientConfig{}, err
 	}
+
 	return ClientConfig{config: c}, nil
 }
 

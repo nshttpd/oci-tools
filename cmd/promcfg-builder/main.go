@@ -105,7 +105,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	config, err := oci.CreateConfig(home+defaultConfig, *profile)
+	config, err := oci.CreateConfig(home+defaultConfig, *profile, *region)
 	if err != nil {
 		utils.ErrorMsg("error getting OCI config", err)
 		os.Exit(1)
