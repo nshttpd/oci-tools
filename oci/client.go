@@ -1,14 +1,10 @@
 package oci
 
 import (
-	"encoding/pem"
-
-	"crypto/x509"
-
-	"bytes"
-
 	"bufio"
-
+	"bytes"
+	"crypto/x509"
+	"encoding/pem"
 	"fmt"
 
 	"github.com/oracle/oci-go-sdk/common"
