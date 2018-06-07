@@ -1,6 +1,16 @@
 package oci
 
 import (
+	"encoding/pem"
+
+	"crypto/x509"
+
+	"bytes"
+
+	"bufio"
+
+	"fmt"
+
 	"github.com/oracle/oci-go-sdk/common"
 )
 
@@ -15,7 +25,26 @@ func CreateConfig(file string, profile string, region string) (ClientConfig, err
 		return ClientConfig{}, err
 	}
 
-	return ClientConfig{config: c}, nil
+	t, _ := c.TenancyOCID()
+	u, _ := c.UserOCID()
+	f, _ := c.KeyFingerprint()
+	k, _ := c.PrivateRSAKey()
+	pk := &pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(k),
+	}
+
+	var b bytes.Buffer
+	o := bufio.NewWriter(&b)
+	err = pem.Encode(o, pk)
+	if err != nil {
+		return ClientConfig{}, fmt.Errorf("error encoding private key back to string : %v", err)
+	}
+	o.Flush()
+
+	r := common.NewRawConfigurationProvider(t, u, region, f, string(b.Bytes()[:len(b.Bytes())]), nil)
+
+	return ClientConfig{config: r, Region: region}, nil
 }
 
 func (c *ClientConfig) Config() common.ConfigurationProvider {

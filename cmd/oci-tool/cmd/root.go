@@ -82,12 +82,14 @@ addresses for the hosts.
 		p := cobra.Flag("profile").Value
 		f := cobra.Flag("config").Value
 
-		config, err = oci.CreateConfig(home+f.String(), p.String())
+		config, err = oci.CreateConfig(home+f.String(), p.String(),
+			cobra.Flag("region").Value.String(),
+		)
+
 		if err != nil {
 			utils.ErrorMsg("error getting OCI config", err)
 			os.Exit(1)
 		}
-		config.Region = cobra.Flag("region").Value.String()
 	},
 }
 
