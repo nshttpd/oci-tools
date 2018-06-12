@@ -38,7 +38,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const defaultListCompartmentTmpl = "{{ .Name }} - {{ .Id }}"
+const defaultListCompartmentTmpl = "{{ .Name }} - {{ .Id }}\n"
 
 // compartmentsCmd represents the compartments command
 var compartmentsCmd = &cobra.Command{

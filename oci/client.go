@@ -38,6 +38,10 @@ func CreateConfig(file string, profile string, region string) (ClientConfig, err
 	}
 	o.Flush()
 
+	if region == "" {
+		region, _ = c.Region()
+	}
+
 	r := common.NewRawConfigurationProvider(t, u, region, f, string(b.Bytes()[:len(b.Bytes())]), nil)
 
 	return ClientConfig{config: r, Region: region}, nil

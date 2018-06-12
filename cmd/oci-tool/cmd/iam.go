@@ -30,10 +30,6 @@
 package cmd
 
 import (
-	"fmt"
-
-	"os"
-
 	"github.com/spf13/cobra"
 )
 
@@ -47,15 +43,6 @@ that information back out. For example:
 	oci-tool iam compartments list
 
 will print out a user friendly set of data about compartments`,
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if cmd.Flag("region").Value.String() == "" {
-			fmt.Printf("region must be supplied as a parameter\n")
-			os.Exit(1)
-		}
-	},
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("iam called")
-	},
 }
 
 func init() {

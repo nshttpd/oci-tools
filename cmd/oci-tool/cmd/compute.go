@@ -15,6 +15,9 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/spf13/cobra"
 )
 
@@ -28,6 +31,14 @@ back out said information. For example:
 	oci-tool compute images list
 
 Will print out a user friendly set of output for images.`,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		// self chaining
+		rootCmd.PersistentPreRun(cmd, args)
+		if cmd.Flag("region").Value.String() == "" {
+			fmt.Printf("region must be supplied as a parameter\n")
+			os.Exit(1)
+		}
+	},
 }
 
 func init() {

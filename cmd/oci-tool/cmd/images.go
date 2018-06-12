@@ -31,11 +31,12 @@ package cmd
 
 import (
 	"context"
+	"os"
+	"text/template"
+
 	"github.com/nshttpd/oci-tools/utils"
 	"github.com/oracle/oci-go-sdk/core"
 	"github.com/spf13/cobra"
-	"os"
-	"text/template"
 )
 
 const defaultListImageTmpl = "{{ .DisplayName }}   {{ .Id }}\n"
@@ -58,13 +59,7 @@ additional filter can be applied if necessary, example:
 
 oci-tool compute images list --operating-system "Oracle Linux"`,
 	Run: func(cmd *cobra.Command, args []string) {
-		c, err := core.NewComputeClientWithConfigurationProvider(config.Config())
-		if err != nil {
-			utils.ErrorMsg("error creating Compute Client", err)
-			os.Exit(1)
-		}
-		c.SetRegion(cmd.Flag("region").Value.String())
-		listImages(cmd, c)
+		listImages(cmd)
 	},
 }
 
@@ -75,7 +70,12 @@ func init() {
 	imagesCmd.PersistentFlags().StringVar(&operatingSystem, "operating-system", "", "limit images to operating system")
 }
 
-func listImages(cmd *cobra.Command, client core.ComputeClient) {
+func listImages(cmd *cobra.Command) {
+	client, err := core.NewComputeClientWithConfigurationProvider(config.Config())
+	if err != nil {
+		utils.ErrorMsg("error creating Compute Client", err)
+		os.Exit(1)
+	}
 	cid := cmd.Flag("compartment-id").Value.String()
 	if cid == "" {
 		var err error
