@@ -70,10 +70,7 @@ filter to only a single compartment if needed. It will also get the vnics and
 addresses for the hosts.
 `,
 	PersistentPreRun: func(cobra *cobra.Command, args []string) {
-		if cobra.Flag("region").Value.String() == "" {
-			fmt.Printf("region must be supplied as a parameter\n")
-			os.Exit(1)
-		}
+
 		home, err := homedir.Dir()
 		if err != nil {
 			utils.ErrorMsg("error finding users home directory", err)
@@ -90,6 +87,27 @@ addresses for the hosts.
 			utils.ErrorMsg("error getting OCI config", err)
 			os.Exit(1)
 		}
+
+		if cobra.Flag("compartment").Value.String() != "" {
+			comparts, err := config.GetCompartments()
+			if err != nil {
+				utils.ErrorMsg("error fetching compartments", err)
+				os.Exit(1)
+			}
+			id := comparts.CompartmentId(cobra.Flag("compartment").Value.String())
+			if id == nil {
+				err := fmt.Errorf("missing compartment id for '%s'",
+					cobra.Flag("compartment").Value.String())
+				utils.ErrorMsg("could not find id for compartment", err)
+				os.Exit(1)
+			}
+			err = cobra.Flag("compartment-id").Value.Set(*id)
+			if err != nil {
+				utils.ErrorMsg("error setting value for compartment-id", err)
+				os.Exit(1)
+			}
+		}
+
 	},
 }
 

@@ -2,8 +2,9 @@ package oci
 
 import (
 	"context"
-	"github.com/oracle/oci-go-sdk/identity"
 	"strings"
+
+	"github.com/oracle/oci-go-sdk/identity"
 )
 
 type Compartments struct {
@@ -13,7 +14,7 @@ type Compartments struct {
 func (c *ClientConfig) GetCompartments() (Compartments, error) {
 	cs := Compartments{}
 	var err error
-	client, err := identity.NewIdentityClientWithConfigurationProvider(c.config)
+	client, err := identity.NewIdentityClientWithConfigurationProvider(c.Config())
 	if err == nil {
 		cid, err := c.TenancyOCID()
 		if err == nil {

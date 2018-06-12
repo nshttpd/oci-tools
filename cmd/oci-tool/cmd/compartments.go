@@ -30,26 +30,21 @@
 package cmd
 
 import (
-	"fmt"
+	"html/template"
 
 	"os"
-	"text/template"
 
-	"github.com/nshttpd/oci-tools/oci"
 	"github.com/nshttpd/oci-tools/utils"
 	"github.com/spf13/cobra"
 )
 
-const defaultListInstanceTmpl = `{{ .Instance.DisplayName }} {{ .Instance.LifecycleState }}
-{{ range $key, $value := .Vnics }}- {{ .PublicIp }}	- {{ .PrivateIp }}{{ end }}
-	{{ .Instance.Id }}
-`
+const defaultListCompartmentTmpl = "{{ .Name }} - {{ .Id }}"
 
-// instancesCmd represents the instances command
-var instancesCmd = &cobra.Command{
-	Use:     "instances",
-	Aliases: []string{"instance"},
-	Short:   "access instance information",
+// compartmentsCmd represents the compartments command
+var compartmentsCmd = &cobra.Command{
+	Use:     "compartments",
+	Aliases: []string{"compartment"},
+	Short:   "access compartment information",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -58,59 +53,41 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 }
 
-var listInstancesCmd = &cobra.Command{
+var listCompartmentsCmd = &cobra.Command{
 	Use:   "list",
-	Short: "list instances in tenancy",
-	Long: `List instances in the tenancy. This will list
-all of them unless a compartment-id is specified. 
+	Short: "list compartments",
+	Long: `List compartments in the tenancy.
 
-	oci-tool compute instances list
+	oci-tool iam compartments list
+
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		listInstances(cmd)
+		listCompartments(cmd)
 	},
 }
 
 func init() {
-	computeCmd.AddCommand(instancesCmd)
-	instancesCmd.AddCommand(listInstancesCmd)
+	iamCmd.AddCommand(compartmentsCmd)
+	compartmentsCmd.AddCommand(listCompartmentsCmd)
 }
 
-func listInstances(cmd *cobra.Command) {
-	cid := cmd.Flag("compartment-id").Value.String()
-
+func listCompartments(cmd *cobra.Command) {
 	comparts, err := config.GetCompartments()
 	if err != nil {
 		utils.ErrorMsg("error fetching compartments from API", err)
 		return
 	}
 
-	// get the instances in each Compartment
-	var computes []*oci.Compute
-
-	// can maybe goroutines this to make it faster?
-	for _, c := range comparts.Compartments() {
-		if cid != "" && *c.Id != cid {
-			continue
-		}
-		cs, err := config.GetComputeInstances(c)
-		if err != nil {
-			utils.ErrorMsg(fmt.Sprintf("error fetching Computes for cid : %s", *c.Id), err)
-		} else {
-			computes = append(computes, cs...)
-		}
-	}
-
-	tmpl, err := template.New("imageList").Parse(defaultListInstanceTmpl)
+	tmpl, err := template.New("compartmentList").Parse(defaultListCompartmentTmpl)
 	if err == nil {
-		for _, i := range computes {
-			err := tmpl.Execute(os.Stdout, i)
+		for _, c := range comparts.Compartments() {
+			err := tmpl.Execute(os.Stdout, c)
 			if err != nil {
-				utils.ErrorMsg("error processing item for template", err)
+				utils.ErrorMsg("error processing compartment item for template", err)
 			}
 		}
 	} else {
-		utils.ErrorMsg("error setting up output template", err)
+		utils.ErrorMsg("error creating output template", err)
 	}
 
 }
