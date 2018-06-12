@@ -35,8 +35,11 @@ import (
 	"os"
 	"text/template"
 
+	"sync"
+
 	"github.com/nshttpd/oci-tools/oci"
 	"github.com/nshttpd/oci-tools/utils"
+	"github.com/oracle/oci-go-sdk/identity"
 	"github.com/spf13/cobra"
 )
 
@@ -86,20 +89,29 @@ func listInstances(cmd *cobra.Command) {
 	}
 
 	// get the instances in each Compartment
-	var computes []*oci.Compute
+	computes := make([]*oci.Compute, 0)
+	mux := &sync.Mutex{}
 
-	// can maybe goroutines this to make it faster?
+	var wg sync.WaitGroup
 	for _, c := range comparts.Compartments() {
 		if cid != "" && *c.Id != cid {
 			continue
 		}
-		cs, err := config.GetComputeInstances(c)
-		if err != nil {
-			utils.ErrorMsg(fmt.Sprintf("error fetching Computes for cid : %s", *c.Id), err)
-		} else {
-			computes = append(computes, cs...)
-		}
+		wg.Add(1)
+		go func(compart identity.Compartment) {
+			defer wg.Done()
+			cs, err := config.GetComputeInstances(compart)
+			if err != nil {
+				utils.ErrorMsg(fmt.Sprintf("error fetching Computes for cid : %s", *c.Id), err)
+			} else {
+				mux.Lock()
+				computes = append(computes, cs...)
+				mux.Unlock()
+			}
+
+		}(c)
 	}
+	wg.Wait()
 
 	tmpl, err := template.New("imageList").Parse(defaultListInstanceTmpl)
 	if err == nil {
