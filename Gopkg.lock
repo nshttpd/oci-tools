@@ -20,8 +20,8 @@
     "core",
     "identity"
   ]
-  revision = "483be76c8d79ca38dd2e7e7d1ee0047d5cc2c66b"
-  version = "v1.6.0"
+  revision = "78557081b2685457544097b964c3abca8a3eacf2"
+  version = "v1.7.0"
 
 [[projects]]
   name = "github.com/spf13/cobra"
