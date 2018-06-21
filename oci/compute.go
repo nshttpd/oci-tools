@@ -2,6 +2,13 @@ package oci
 
 import (
 	"context"
+
+	"runtime"
+
+	"sync"
+
+	"fmt"
+
 	"github.com/oracle/oci-go-sdk/core"
 	"github.com/oracle/oci-go-sdk/identity"
 )
@@ -9,8 +16,8 @@ import (
 // a conglomeration of things that make up a OCI Instance, the instance itself, VNICs
 // and other things later as needed (attached storage etc. etc.)
 type Compute struct {
-	Instance core.Instance
-	Vnics    []core.Vnic
+	Instance    core.Instance
+	Vnics       []core.Vnic
 	Compartment identity.Compartment
 }
 
@@ -26,17 +33,34 @@ func (cc *ClientConfig) GetComputeInstances(compartment identity.Compartment) ([
 	if err != nil {
 		return nil, err
 	}
+
+	throttle := make(chan int, runtime.NumCPU())
+	var wg sync.WaitGroup
+	mux := &sync.Mutex{}
+
 	computes := make([]*Compute, len(res.Items))
 	for x, i := range res.Items {
-		var v []core.Vnic
-		if i.LifecycleState == core.InstanceLifecycleStateRunning {
-			v, err = cc.GetVnics(i)
-			if err != nil {
-				return nil, err
+
+		throttle <- 1
+		wg.Add(1)
+		go func(idx int, inst core.Instance) {
+			defer wg.Done()
+			var v []core.Vnic
+			if inst.LifecycleState == core.InstanceLifecycleStateRunning {
+				v, err = cc.GetVnics(inst)
+				if err != nil {
+					fmt.Printf("error fetching vnic : %v\n", err)
+					<-throttle
+					return
+				}
 			}
-		}
-		computes[x] = &Compute{Instance: i, Vnics: v, Compartment: compartment}
+			mux.Lock()
+			computes[idx] = &Compute{Instance: inst, Vnics: v, Compartment: compartment}
+			mux.Unlock()
+			<-throttle
+		}(x, i)
 	}
+	wg.Wait()
 	return computes, nil
 }
 
