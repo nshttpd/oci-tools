@@ -1,6 +1,6 @@
 # Gopkg.toml example
 #
-# Refer to https://github.com/golang/dep/blob/master/docs/Gopkg.toml.md
+# Refer to https://golang.github.io/dep/docs/Gopkg.toml.html
 # for detailed Gopkg.toml documentation.
 #
 # required = ["github.com/user/thing/cmd/thing"]
@@ -24,14 +24,17 @@
 #   go-tests = true
 #   unused-packages = true
 
-
 [[constraint]]
   branch = "master"
   name = "github.com/mitchellh/go-homedir"
 
 [[constraint]]
+  name = "github.com/oracle/oci-go-sdk"
+  version = "2.3.0"
+
+[[constraint]]
   name = "github.com/spf13/cobra"
-  version = "0.0.2"
+  version = "0.0.3"
 
 [prune]
   go-tests = true
