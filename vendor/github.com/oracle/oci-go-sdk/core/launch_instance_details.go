@@ -45,8 +45,13 @@ type LaunchInstanceDetails struct {
 
 	// Additional metadata key/value pairs that you provide.  They serve a similar purpose and functionality from fields in the 'metadata' object.
 	// They are distinguished from 'metadata' fields in that these can be nested JSON objects (whereas 'metadata' fields are string/string maps only).
-	// If you don't need nested metadata values, it is strongly advised to avoid using this object and use the Metadata object instead.
 	ExtendedMetadata map[string]interface{} `mandatory:"false" json:"extendedMetadata"`
+
+	// The name of the Fault Domain in which to launch an instance.
+	// To get a list of Fault Domains, use the ListFaultDomains
+	// operation in the Identity and Access Management Service API.
+	// Example: `FAULT-DOMAIN-1`
+	FaultDomain *string `mandatory:"false" json:"faultDomain"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
 	// predefined name, type, or namespace. For more information, see
@@ -150,6 +155,7 @@ func (m *LaunchInstanceDetails) UnmarshalJSON(data []byte) (e error) {
 		DefinedTags        map[string]map[string]interface{} `json:"definedTags"`
 		DisplayName        *string                           `json:"displayName"`
 		ExtendedMetadata   map[string]interface{}            `json:"extendedMetadata"`
+		FaultDomain        *string                           `json:"faultDomain"`
 		FreeformTags       map[string]string                 `json:"freeformTags"`
 		HostnameLabel      *string                           `json:"hostnameLabel"`
 		ImageId            *string                           `json:"imageId"`
@@ -170,6 +176,7 @@ func (m *LaunchInstanceDetails) UnmarshalJSON(data []byte) (e error) {
 	m.DefinedTags = model.DefinedTags
 	m.DisplayName = model.DisplayName
 	m.ExtendedMetadata = model.ExtendedMetadata
+	m.FaultDomain = model.FaultDomain
 	m.FreeformTags = model.FreeformTags
 	m.HostnameLabel = model.HostnameLabel
 	m.ImageId = model.ImageId
@@ -179,7 +186,11 @@ func (m *LaunchInstanceDetails) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
-	m.SourceDetails = nn.(InstanceSourceDetails)
+	if nn != nil {
+		m.SourceDetails = nn.(InstanceSourceDetails)
+	} else {
+		m.SourceDetails = nil
+	}
 	m.SubnetId = model.SubnetId
 	m.AvailabilityDomain = model.AvailabilityDomain
 	m.CompartmentId = model.CompartmentId

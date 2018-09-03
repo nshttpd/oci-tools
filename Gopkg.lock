@@ -2,42 +2,73 @@
 
 
 [[projects]]
+  digest = "1:870d441fe217b8e689d7949fef6e43efbc787e50f200cb1e70dbca9204a1d6be"
   name = "github.com/inconshreveable/mousetrap"
   packages = ["."]
+  pruneopts = "UT"
   revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
   version = "v1.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:12ae6210bdbdad658a9a67fd95cd9c99f7fdbf12f6d36eaf0af704e69dacf4f5"
   name = "github.com/mitchellh/go-homedir"
   packages = ["."]
+  pruneopts = "UT"
   revision = "b8bc1bf767474819792c23f32d8286a45736f1c6"
 
 [[projects]]
+  branch = "master"
+  digest = "1:f3f184b5bed476a95535a09492d3ba50af1afdab84f95bf9f27c0778a8985faf"
+  name = "github.com/nshttpd/oci-tools"
+  packages = [
+    "cmd/oci-tool/cmd",
+    "oci",
+    "utils",
+  ]
+  pruneopts = "UT"
+  revision = "693cc6065a83ccb198c8ea3bf4fc7aeea3c90a6e"
+
+[[projects]]
+  digest = "1:5d7c3f8e71f0b2fc160dfea12bef69cac06ea872ca82e92e9f9fce385a60ec22"
   name = "github.com/oracle/oci-go-sdk"
   packages = [
     "common",
     "core",
-    "identity"
+    "identity",
   ]
-  revision = "78557081b2685457544097b964c3abca8a3eacf2"
-  version = "v1.7.0"
+  pruneopts = "UT"
+  revision = "8ed41cef6b8facdeebf9543302c4beb3db580c1e"
+  version = "v2.3.0"
 
 [[projects]]
+  digest = "1:64768bf51e20ae5de0abfaa7248cdde985200f816df0e4ce157b3dc4ba55133e"
   name = "github.com/spf13/cobra"
   packages = ["."]
+  pruneopts = "UT"
   revision = "a1f051bc3eba734da4772d60e2d677f47cf93ef4"
   version = "v0.0.2"
 
 [[projects]]
+  digest = "1:9424f440bba8f7508b69414634aef3b2b3a877e522d8a4624692412805407bb7"
   name = "github.com/spf13/pflag"
   packages = ["."]
+  pruneopts = "UT"
   revision = "583c0c0531f06d5278b7d917446061adc344b5cd"
   version = "v1.0.1"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "fe39e739447b7d067095d6c36c2902245521367d2e0545d6722267f14dafb172"
+  input-imports = [
+    "github.com/mitchellh/go-homedir",
+    "github.com/nshttpd/oci-tools/cmd/oci-tool/cmd",
+    "github.com/nshttpd/oci-tools/oci",
+    "github.com/nshttpd/oci-tools/utils",
+    "github.com/oracle/oci-go-sdk/common",
+    "github.com/oracle/oci-go-sdk/core",
+    "github.com/oracle/oci-go-sdk/identity",
+    "github.com/spf13/cobra",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
