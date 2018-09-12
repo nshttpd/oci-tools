@@ -14,14 +14,31 @@ type Compartments struct {
 func (c *ClientConfig) GetCompartments() (Compartments, error) {
 	cs := Compartments{}
 	var err error
+
 	client, err := identity.NewIdentityClientWithConfigurationProvider(c.Config())
 	if err == nil {
 		cid, err := c.TenancyOCID()
 		if err == nil {
-			req := identity.ListCompartmentsRequest{CompartmentId: &cid}
-			res, err := client.ListCompartments(context.Background(), req)
-			if err == nil {
-				cs.compartments = res.Items
+			more := true
+			var next *string
+
+			for more {
+				req := identity.ListCompartmentsRequest{CompartmentId: &cid}
+				if next != nil {
+					req.Page = next
+				}
+				res, err := client.ListCompartments(context.Background(), req)
+				if err == nil {
+					cs.compartments = append(cs.compartments, res.Items...)
+					if res.OpcNextPage != nil {
+						next = res.OpcNextPage
+					} else {
+						more = false
+					}
+				} else {
+					more = false
+				}
+
 			}
 		}
 	}
