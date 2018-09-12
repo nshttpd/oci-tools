@@ -46,11 +46,12 @@ const (
 
 var (
 	cfgFile       string
-	region        string
-	profile       string
 	compartment   string
 	compartmentId string
 	config        oci.ClientConfig
+	debug         bool
+	profile       string
+	region        string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -129,6 +130,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&profile, "profile", defaultProfile, "Config File Profile")
 	rootCmd.PersistentFlags().StringVar(&compartment, "compartment", "", "Compartment Name")
 	rootCmd.PersistentFlags().StringVar(&compartmentId, "compartment-id", "", "Compartment ID")
+	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "debug output")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
