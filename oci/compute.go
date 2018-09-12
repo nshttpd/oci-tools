@@ -28,18 +28,37 @@ func (cc *ClientConfig) GetComputeInstances(compartment identity.Compartment) ([
 		// when real logging is here DEBUG stuff can go here.
 		return nil, err
 	}
-	req := core.ListInstancesRequest{CompartmentId: compartment.Id}
-	res, err := client.ListInstances(context.Background(), req)
-	if err != nil {
-		return nil, err
+
+	var more = true
+	var next *string
+
+	instances := make([]core.Instance, 0)
+
+	for more {
+		req := core.ListInstancesRequest{CompartmentId: compartment.Id}
+		if next != nil {
+			req.Page = next
+		}
+		res, err := client.ListInstances(context.Background(), req)
+		if err == nil {
+			instances = append(instances, res.Items...)
+			if res.OpcNextPage != nil {
+				next = res.OpcNextPage
+			} else {
+				more = false
+			}
+		} else {
+			more = false
+			return nil, err
+		}
 	}
 
 	throttle := make(chan int, runtime.NumCPU())
 	var wg sync.WaitGroup
 	mux := &sync.Mutex{}
 
-	computes := make([]*Compute, len(res.Items))
-	for x, i := range res.Items {
+	computes := make([]*Compute, len(instances))
+	for x, i := range instances {
 
 		throttle <- 1
 		wg.Add(1)
