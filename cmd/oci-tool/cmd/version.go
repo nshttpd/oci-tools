@@ -31,6 +31,8 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+	"net/http"
 
 	"github.com/spf13/cobra"
 )
@@ -53,6 +55,20 @@ The check for a new version relies on internet connectivity. If there
 isn't any no error will be reported.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("\noci-tool: %s (sha: %s)\n\n", version, shortSha)
+
+		resp, err := http.Get(VersionCheck)
+		// if there is an err we just fail silently
+		if err == nil {
+			defer resp.Body.Close()
+			if resp.StatusCode == 200 {
+				body, err := ioutil.ReadAll(resp.Body)
+				if err == nil {
+					if string(body) != version {
+						fmt.Printf("\nA New version of oci-tool is available : %s\n\n", body)
+					}
+				}
+			}
+		}
 	},
 }
 
