@@ -72,6 +72,10 @@ addresses for the hosts.
 `,
 	PersistentPreRun: func(cobra *cobra.Command, args []string) {
 
+		if cobra.CalledAs() == "version" {
+			return
+		}
+
 		home, err := homedir.Dir()
 		if err != nil {
 			utils.ErrorMsg("error finding users home directory", err)
