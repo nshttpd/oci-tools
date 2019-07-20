@@ -1,9 +1,13 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
 //
-// APIs for Networking Service, Compute Service, and Block Volume Service.
+// API covering the Networking (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/overview.htm),
+// Compute (https://docs.cloud.oracle.com/iaas/Content/Compute/Concepts/computeoverview.htm), and
+// Block Volume (https://docs.cloud.oracle.com/iaas/Content/Block/Concepts/overview.htm) services. Use this API
+// to manage resources such as virtual cloud networks (VCNs), compute instances, and
+// block storage volumes.
 //
 
 package core
@@ -16,10 +20,12 @@ import (
 // to the DRG peer with a VCN in a different region. *Peering* means that the two VCNs can
 // communicate using private IP addresses, but without the traffic traversing the internet or
 // routing through your on-premises network. For more information, see
-// VCN Peering (https://docs.us-phoenix-1.oraclecloud.com/Content/Network/Tasks/VCNpeering.htm).
+// VCN Peering (https://docs.cloud.oracle.com/Content/Network/Tasks/VCNpeering.htm).
 // To use any of the API operations, you must be authorized in an IAM policy. If you're not authorized,
 // talk to an administrator. If you're an administrator who needs to write policies to give users access, see
-// Getting Started with Policies (https://docs.us-phoenix-1.oraclecloud.com/Content/Identity/Concepts/policygetstarted.htm).
+// Getting Started with Policies (https://docs.cloud.oracle.com/Content/Identity/Concepts/policygetstarted.htm).
+// **Warning:** Oracle recommends that you avoid using any confidential information when you
+// supply string values using the API.
 type RemotePeeringConnection struct {
 
 	// The OCID of the compartment that contains the RPC.
@@ -69,7 +75,7 @@ func (m RemotePeeringConnection) String() string {
 // RemotePeeringConnectionLifecycleStateEnum Enum with underlying type: string
 type RemotePeeringConnectionLifecycleStateEnum string
 
-// Set of constants representing the allowable values for RemotePeeringConnectionLifecycleState
+// Set of constants representing the allowable values for RemotePeeringConnectionLifecycleStateEnum
 const (
 	RemotePeeringConnectionLifecycleStateAvailable    RemotePeeringConnectionLifecycleStateEnum = "AVAILABLE"
 	RemotePeeringConnectionLifecycleStateProvisioning RemotePeeringConnectionLifecycleStateEnum = "PROVISIONING"
@@ -84,7 +90,7 @@ var mappingRemotePeeringConnectionLifecycleState = map[string]RemotePeeringConne
 	"TERMINATED":   RemotePeeringConnectionLifecycleStateTerminated,
 }
 
-// GetRemotePeeringConnectionLifecycleStateEnumValues Enumerates the set of values for RemotePeeringConnectionLifecycleState
+// GetRemotePeeringConnectionLifecycleStateEnumValues Enumerates the set of values for RemotePeeringConnectionLifecycleStateEnum
 func GetRemotePeeringConnectionLifecycleStateEnumValues() []RemotePeeringConnectionLifecycleStateEnum {
 	values := make([]RemotePeeringConnectionLifecycleStateEnum, 0)
 	for _, v := range mappingRemotePeeringConnectionLifecycleState {
@@ -96,7 +102,7 @@ func GetRemotePeeringConnectionLifecycleStateEnumValues() []RemotePeeringConnect
 // RemotePeeringConnectionPeeringStatusEnum Enum with underlying type: string
 type RemotePeeringConnectionPeeringStatusEnum string
 
-// Set of constants representing the allowable values for RemotePeeringConnectionPeeringStatus
+// Set of constants representing the allowable values for RemotePeeringConnectionPeeringStatusEnum
 const (
 	RemotePeeringConnectionPeeringStatusInvalid RemotePeeringConnectionPeeringStatusEnum = "INVALID"
 	RemotePeeringConnectionPeeringStatusNew     RemotePeeringConnectionPeeringStatusEnum = "NEW"
@@ -113,7 +119,7 @@ var mappingRemotePeeringConnectionPeeringStatus = map[string]RemotePeeringConnec
 	"REVOKED": RemotePeeringConnectionPeeringStatusRevoked,
 }
 
-// GetRemotePeeringConnectionPeeringStatusEnumValues Enumerates the set of values for RemotePeeringConnectionPeeringStatus
+// GetRemotePeeringConnectionPeeringStatusEnumValues Enumerates the set of values for RemotePeeringConnectionPeeringStatusEnum
 func GetRemotePeeringConnectionPeeringStatusEnumValues() []RemotePeeringConnectionPeeringStatusEnum {
 	values := make([]RemotePeeringConnectionPeeringStatusEnum, 0)
 	for _, v := range mappingRemotePeeringConnectionPeeringStatus {

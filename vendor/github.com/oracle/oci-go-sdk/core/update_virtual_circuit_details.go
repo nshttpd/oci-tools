@@ -1,9 +1,13 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
 //
-// APIs for Networking Service, Compute Service, and Block Volume Service.
+// API covering the Networking (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/overview.htm),
+// Compute (https://docs.cloud.oracle.com/iaas/Content/Compute/Concepts/computeoverview.htm), and
+// Block Volume (https://docs.cloud.oracle.com/iaas/Content/Block/Concepts/overview.htm) services. Use this API
+// to manage resources such as virtual cloud networks (VCNs), compute instances, and
+// block storage volumes.
 //
 
 package core
@@ -56,6 +60,9 @@ type UpdateVirtualCircuitDetails struct {
 	// To be updated only by the provider.
 	ProviderState UpdateVirtualCircuitDetailsProviderStateEnum `mandatory:"false" json:"providerState,omitempty"`
 
+	// The service key name offered by the provider (if the customer is connecting via a provider).
+	ProviderServiceKeyName *string `mandatory:"false" json:"providerServiceKeyName"`
+
 	// Provider-supplied reference information about this virtual circuit.
 	// Relevant only if the customer is using FastConnect via a provider.
 	// To be updated only by the provider.
@@ -69,7 +76,7 @@ func (m UpdateVirtualCircuitDetails) String() string {
 // UpdateVirtualCircuitDetailsProviderStateEnum Enum with underlying type: string
 type UpdateVirtualCircuitDetailsProviderStateEnum string
 
-// Set of constants representing the allowable values for UpdateVirtualCircuitDetailsProviderState
+// Set of constants representing the allowable values for UpdateVirtualCircuitDetailsProviderStateEnum
 const (
 	UpdateVirtualCircuitDetailsProviderStateActive   UpdateVirtualCircuitDetailsProviderStateEnum = "ACTIVE"
 	UpdateVirtualCircuitDetailsProviderStateInactive UpdateVirtualCircuitDetailsProviderStateEnum = "INACTIVE"
@@ -80,7 +87,7 @@ var mappingUpdateVirtualCircuitDetailsProviderState = map[string]UpdateVirtualCi
 	"INACTIVE": UpdateVirtualCircuitDetailsProviderStateInactive,
 }
 
-// GetUpdateVirtualCircuitDetailsProviderStateEnumValues Enumerates the set of values for UpdateVirtualCircuitDetailsProviderState
+// GetUpdateVirtualCircuitDetailsProviderStateEnumValues Enumerates the set of values for UpdateVirtualCircuitDetailsProviderStateEnum
 func GetUpdateVirtualCircuitDetailsProviderStateEnumValues() []UpdateVirtualCircuitDetailsProviderStateEnum {
 	values := make([]UpdateVirtualCircuitDetailsProviderStateEnum, 0)
 	for _, v := range mappingUpdateVirtualCircuitDetailsProviderState {

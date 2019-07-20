@@ -1,9 +1,13 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
 //
-// APIs for Networking Service, Compute Service, and Block Volume Service.
+// API covering the Networking (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/overview.htm),
+// Compute (https://docs.cloud.oracle.com/iaas/Content/Compute/Concepts/computeoverview.htm), and
+// Block Volume (https://docs.cloud.oracle.com/iaas/Content/Block/Concepts/overview.htm) services. Use this API
+// to manage resources such as virtual cloud networks (VCNs), compute instances, and
+// block storage volumes.
 //
 
 package core
@@ -20,7 +24,7 @@ type CreateVirtualCircuitDetails struct {
 
 	// The type of IP addresses used in this virtual circuit. PRIVATE
 	// means RFC 1918 (https://tools.ietf.org/html/rfc1918) addresses
-	// (10.0.0.0/8, 172.16/12, and 192.168/16). Only PRIVATE is supported.
+	// (10.0.0.0/8, 172.16/12, and 192.168/16).
 	Type CreateVirtualCircuitDetailsTypeEnum `mandatory:"true" json:"type"`
 
 	// The provisioned data rate of the connection.  To get a list of the
@@ -55,6 +59,9 @@ type CreateVirtualCircuitDetails struct {
 	// ListFastConnectProviderServices.
 	ProviderServiceId *string `mandatory:"false" json:"providerServiceId"`
 
+	// The service key name offered by the provider (if the customer is connecting via a provider).
+	ProviderServiceKeyName *string `mandatory:"false" json:"providerServiceKeyName"`
+
 	// Deprecated. Instead use `providerServiceId`.
 	// To get a list of the provider names, see
 	// ListFastConnectProviderServices.
@@ -77,7 +84,7 @@ func (m CreateVirtualCircuitDetails) String() string {
 // CreateVirtualCircuitDetailsTypeEnum Enum with underlying type: string
 type CreateVirtualCircuitDetailsTypeEnum string
 
-// Set of constants representing the allowable values for CreateVirtualCircuitDetailsType
+// Set of constants representing the allowable values for CreateVirtualCircuitDetailsTypeEnum
 const (
 	CreateVirtualCircuitDetailsTypePublic  CreateVirtualCircuitDetailsTypeEnum = "PUBLIC"
 	CreateVirtualCircuitDetailsTypePrivate CreateVirtualCircuitDetailsTypeEnum = "PRIVATE"
@@ -88,7 +95,7 @@ var mappingCreateVirtualCircuitDetailsType = map[string]CreateVirtualCircuitDeta
 	"PRIVATE": CreateVirtualCircuitDetailsTypePrivate,
 }
 
-// GetCreateVirtualCircuitDetailsTypeEnumValues Enumerates the set of values for CreateVirtualCircuitDetailsType
+// GetCreateVirtualCircuitDetailsTypeEnumValues Enumerates the set of values for CreateVirtualCircuitDetailsTypeEnum
 func GetCreateVirtualCircuitDetailsTypeEnumValues() []CreateVirtualCircuitDetailsTypeEnum {
 	values := make([]CreateVirtualCircuitDetailsTypeEnum, 0)
 	for _, v := range mappingCreateVirtualCircuitDetailsType {

@@ -1,9 +1,13 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
 //
-// APIs for Networking Service, Compute Service, and Block Volume Service.
+// API covering the Networking (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/overview.htm),
+// Compute (https://docs.cloud.oracle.com/iaas/Content/Compute/Concepts/computeoverview.htm), and
+// Block Volume (https://docs.cloud.oracle.com/iaas/Content/Block/Concepts/overview.htm) services. Use this API
+// to manage resources such as virtual cloud networks (VCNs), compute instances, and
+// block storage volumes.
 //
 
 package core
@@ -22,7 +26,7 @@ import (
 // If you're a customer who is colocated with Oracle, that means you own both
 // the virtual circuit and the physical connection it runs on (cross-connect or
 // cross-connect group), so you specify all the information in the mapping. There's
-// one exception: for a public virtual circuit, Oracle specifies the BGP IP
+// one exception: for a public virtual circuit, Oracle specifies the BGP IPv4
 // addresses.
 // If you're a provider, then you own the physical connection that the customer's
 // virtual circuit runs on, so you contribute information about the cross-connect
@@ -32,7 +36,7 @@ import (
 // the provider also specifies the BGP peering information. If the BGP session instead
 // goes from Oracle to the customer's edge router, then the customer specifies the BGP
 // peering information. There's one exception: for a public virtual circuit, Oracle
-// specifies the BGP IP addresses.
+// specifies the BGP IPv4 addresses.
 type CrossConnectMapping struct {
 
 	// The key for BGP MD5 authentication. Only applicable if your system
@@ -46,20 +50,20 @@ type CrossConnectMapping struct {
 	// customer is connecting via provider).
 	CrossConnectOrCrossConnectGroupId *string `mandatory:"false" json:"crossConnectOrCrossConnectGroupId"`
 
-	// The BGP IP address for the router on the other end of the BGP session from
+	// The BGP IPv4 address for the router on the other end of the BGP session from
 	// Oracle. Specified by the owner of that router. If the session goes from Oracle
-	// to a customer, this is the BGP IP address of the customer's edge router. If the
-	// session goes from Oracle to a provider, this is the BGP IP address of the
+	// to a customer, this is the BGP IPv4 address of the customer's edge router. If the
+	// session goes from Oracle to a provider, this is the BGP IPv4 address of the
 	// provider's edge router. Must use a /30 or /31 subnet mask.
-	// There's one exception: for a public virtual circuit, Oracle specifies the BGP IP addresses.
+	// There's one exception: for a public virtual circuit, Oracle specifies the BGP IPv4 addresses.
 	// Example: `10.0.0.18/31`
 	CustomerBgpPeeringIp *string `mandatory:"false" json:"customerBgpPeeringIp"`
 
-	// The IP address for Oracle's end of the BGP session. Must use a /30 or /31
+	// The IPv4 address for Oracle's end of the BGP session. Must use a /30 or /31
 	// subnet mask. If the session goes from Oracle to a customer's edge router,
 	// the customer specifies this information. If the session goes from Oracle to
 	// a provider's edge router, the provider specifies this.
-	// There's one exception: for a public virtual circuit, Oracle specifies the BGP IP addresses.
+	// There's one exception: for a public virtual circuit, Oracle specifies the BGP IPv4 addresses.
 	// Example: `10.0.0.19/31`
 	OracleBgpPeeringIp *string `mandatory:"false" json:"oracleBgpPeeringIp"`
 

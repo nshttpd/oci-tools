@@ -1,9 +1,13 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
 //
-// APIs for Networking Service, Compute Service, and Block Volume Service.
+// API covering the Networking (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/overview.htm),
+// Compute (https://docs.cloud.oracle.com/iaas/Content/Compute/Concepts/computeoverview.htm), and
+// Block Volume (https://docs.cloud.oracle.com/iaas/Content/Block/Concepts/overview.htm) services. Use this API
+// to manage resources such as virtual cloud networks (VCNs), compute instances, and
+// block storage volumes.
 //
 
 package core
@@ -22,6 +26,9 @@ type AttachVolumeDetails interface {
 	// The OCID of the volume.
 	GetVolumeId() *string
 
+	// The device name.
+	GetDevice() *string
+
 	// A user-friendly name. Does not have to be unique, and it cannot be changed. Avoid entering confidential information.
 	GetDisplayName() *string
 
@@ -33,6 +40,7 @@ type attachvolumedetails struct {
 	JsonData    []byte
 	InstanceId  *string `mandatory:"true" json:"instanceId"`
 	VolumeId    *string `mandatory:"true" json:"volumeId"`
+	Device      *string `mandatory:"false" json:"device"`
 	DisplayName *string `mandatory:"false" json:"displayName"`
 	IsReadOnly  *bool   `mandatory:"false" json:"isReadOnly"`
 	Type        string  `json:"type"`
@@ -51,6 +59,7 @@ func (m *attachvolumedetails) UnmarshalJSON(data []byte) error {
 	}
 	m.InstanceId = s.Model.InstanceId
 	m.VolumeId = s.Model.VolumeId
+	m.Device = s.Model.Device
 	m.DisplayName = s.Model.DisplayName
 	m.IsReadOnly = s.Model.IsReadOnly
 	m.Type = s.Model.Type
@@ -67,6 +76,14 @@ func (m *attachvolumedetails) UnmarshalPolymorphicJSON(data []byte) (interface{}
 
 	var err error
 	switch m.Type {
+	case "service_determined":
+		mm := AttachServiceDeterminedVolumeDetails{}
+		err = json.Unmarshal(data, &mm)
+		return mm, err
+	case "emulated":
+		mm := AttachEmulatedVolumeDetails{}
+		err = json.Unmarshal(data, &mm)
+		return mm, err
 	case "iscsi":
 		mm := AttachIScsiVolumeDetails{}
 		err = json.Unmarshal(data, &mm)
@@ -88,6 +105,11 @@ func (m attachvolumedetails) GetInstanceId() *string {
 //GetVolumeId returns VolumeId
 func (m attachvolumedetails) GetVolumeId() *string {
 	return m.VolumeId
+}
+
+//GetDevice returns Device
+func (m attachvolumedetails) GetDevice() *string {
+	return m.Device
 }
 
 //GetDisplayName returns DisplayName

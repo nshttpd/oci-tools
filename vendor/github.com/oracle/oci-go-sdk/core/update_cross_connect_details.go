@@ -1,9 +1,13 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
 //
-// APIs for Networking Service, Compute Service, and Block Volume Service.
+// API covering the Networking (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/overview.htm),
+// Compute (https://docs.cloud.oracle.com/iaas/Content/Compute/Concepts/computeoverview.htm), and
+// Block Volume (https://docs.cloud.oracle.com/iaas/Content/Block/Concepts/overview.htm) services. Use this API
+// to manage resources such as virtual cloud networks (VCNs), compute instances, and
+// block storage volumes.
 //
 
 package core
@@ -24,6 +28,10 @@ type UpdateCrossConnectDetails struct {
 	// of the interface is up. Activation indicates to Oracle that the physical connection is ready.
 	// Example: `true`
 	IsActive *bool `mandatory:"false" json:"isActive"`
+
+	// A reference name or identifier for the physical fiber connection that this cross-connect
+	// uses.
+	CustomerReferenceName *string `mandatory:"false" json:"customerReferenceName"`
 }
 
 func (m UpdateCrossConnectDetails) String() string {
