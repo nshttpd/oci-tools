@@ -1,9 +1,13 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
 //
-// APIs for Networking Service, Compute Service, and Block Volume Service.
+// API covering the Networking (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/overview.htm),
+// Compute (https://docs.cloud.oracle.com/iaas/Content/Compute/Concepts/computeoverview.htm), and
+// Block Volume (https://docs.cloud.oracle.com/iaas/Content/Block/Concepts/overview.htm) services. Use this API
+// to manage resources such as virtual cloud networks (VCNs), compute instances, and
+// block storage volumes.
 //
 
 package core
@@ -17,17 +21,19 @@ import (
 // through that subnet. Each instance has a *primary VNIC* that is automatically
 // created and attached during launch. You can add *secondary VNICs* to an
 // instance after it's launched. For more information, see
-// Virtual Network Interface Cards (VNICs) (https://docs.us-phoenix-1.oraclecloud.com/Content/Network/Tasks/managingVNICs.htm).
+// Virtual Network Interface Cards (VNICs) (https://docs.cloud.oracle.com/Content/Network/Tasks/managingVNICs.htm).
 // Each VNIC has a *primary private IP* that is automatically assigned during launch.
 // You can add *secondary private IPs* to a VNIC after it's created. For more
 // information, see CreatePrivateIp and
-// IP Addresses (https://docs.us-phoenix-1.oraclecloud.com/Content/Network/Tasks/managingIPaddresses.htm).
+// IP Addresses (https://docs.cloud.oracle.com/Content/Network/Tasks/managingIPaddresses.htm).
 // To use any of the API operations, you must be authorized in an IAM policy. If you're not authorized,
 // talk to an administrator. If you're an administrator who needs to write policies to give users access, see
-// Getting Started with Policies (https://docs.us-phoenix-1.oraclecloud.com/Content/Identity/Concepts/policygetstarted.htm).
+// Getting Started with Policies (https://docs.cloud.oracle.com/Content/Identity/Concepts/policygetstarted.htm).
+// **Warning:** Oracle recommends that you avoid using any confidential information when you
+// supply string values using the API.
 type Vnic struct {
 
-	// The VNIC's Availability Domain.
+	// The VNIC's availability domain.
 	// Example: `Uocm:PHX-AD-1`
 	AvailabilityDomain *string `mandatory:"true" json:"availabilityDomain"`
 
@@ -47,8 +53,8 @@ type Vnic struct {
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
 
-	// Defined tags for this resource. Each key is predefined and scoped to a namespace.
-	// For more information, see Resource Tags (https://docs.us-phoenix-1.oraclecloud.com/Content/General/Concepts/resourcetags.htm).
+	// Defined tags for this resource. Each key is predefined and scoped to a
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
@@ -57,8 +63,7 @@ type Vnic struct {
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see
-	// Resource Tags (https://docs.us-phoenix-1.oraclecloud.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
@@ -69,7 +74,7 @@ type Vnic struct {
 	// RFC 952 (https://tools.ietf.org/html/rfc952) and
 	// RFC 1123 (https://tools.ietf.org/html/rfc1123).
 	// For more information, see
-	// DNS in Your Virtual Cloud Network (https://docs.us-phoenix-1.oraclecloud.com/Content/Network/Concepts/dns.htm).
+	// DNS in Your Virtual Cloud Network (https://docs.cloud.oracle.com/Content/Network/Concepts/dns.htm).
 	// Example: `bminstance-1`
 	HostnameLabel *string `mandatory:"false" json:"hostnameLabel"`
 
@@ -80,6 +85,11 @@ type Vnic struct {
 	// The MAC address of the VNIC.
 	// Example: `00:00:17:B6:4D:DD`
 	MacAddress *string `mandatory:"false" json:"macAddress"`
+
+	// A list of the OCIDs of the network security groups that the VNIC belongs to. For more
+	// information about NSGs, see
+	// NetworkSecurityGroup.
+	NsgIds []string `mandatory:"false" json:"nsgIds"`
 
 	// The private IP address of the primary `privateIp` object on the VNIC.
 	// The address is within the CIDR of the VNIC's subnet.
@@ -92,7 +102,7 @@ type Vnic struct {
 	// Whether the source/destination check is disabled on the VNIC.
 	// Defaults to `false`, which means the check is performed. For information
 	// about why you would skip the source/destination check, see
-	// Using a Private IP as a Route Target (https://docs.us-phoenix-1.oraclecloud.com/Content/Network/Tasks/managingroutetables.htm#privateip).
+	// Using a Private IP as a Route Target (https://docs.cloud.oracle.com/Content/Network/Tasks/managingroutetables.htm#privateip).
 	// Example: `true`
 	SkipSourceDestCheck *bool `mandatory:"false" json:"skipSourceDestCheck"`
 }
@@ -104,7 +114,7 @@ func (m Vnic) String() string {
 // VnicLifecycleStateEnum Enum with underlying type: string
 type VnicLifecycleStateEnum string
 
-// Set of constants representing the allowable values for VnicLifecycleState
+// Set of constants representing the allowable values for VnicLifecycleStateEnum
 const (
 	VnicLifecycleStateProvisioning VnicLifecycleStateEnum = "PROVISIONING"
 	VnicLifecycleStateAvailable    VnicLifecycleStateEnum = "AVAILABLE"
@@ -119,7 +129,7 @@ var mappingVnicLifecycleState = map[string]VnicLifecycleStateEnum{
 	"TERMINATED":   VnicLifecycleStateTerminated,
 }
 
-// GetVnicLifecycleStateEnumValues Enumerates the set of values for VnicLifecycleState
+// GetVnicLifecycleStateEnumValues Enumerates the set of values for VnicLifecycleStateEnum
 func GetVnicLifecycleStateEnumValues() []VnicLifecycleStateEnum {
 	values := make([]VnicLifecycleStateEnum, 0)
 	for _, v := range mappingVnicLifecycleState {

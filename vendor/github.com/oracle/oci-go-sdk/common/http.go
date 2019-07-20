@@ -66,10 +66,15 @@ func toStringValue(v reflect.Value, field reflect.StructField) (string, error) {
 	}
 }
 
-func addBinaryBody(request *http.Request, value reflect.Value) (e error) {
+func addBinaryBody(request *http.Request, value reflect.Value, field reflect.StructField) (e error) {
 	readCloser, ok := value.Interface().(io.ReadCloser)
-	if !ok {
-		e = fmt.Errorf("body of the request needs to be an io.ReadCloser interface. Can not marshal body of binary request")
+	isMandatory, err := strconv.ParseBool(field.Tag.Get("mandatory"))
+	if err != nil {
+		return fmt.Errorf("mandatory tag is not valid for field %s", field.Name)
+	}
+
+	if isMandatory && !ok {
+		e = fmt.Errorf("body of the request is mandatory and needs  to be an io.ReadCloser interface. Can not marshal body of binary request")
 		return
 	}
 
@@ -186,12 +191,12 @@ func omitNilFieldsInJSON(data interface{}, value reflect.Value) (interface{}, er
 		return jsonMap, nil
 	case reflect.Slice, reflect.Array:
 		// Special case: a []byte may have been marshalled as a string
-		if reflect.TypeOf(data).Kind() == reflect.String && value.Type().Elem().Kind() == reflect.Uint8 {
+		if data != nil && reflect.TypeOf(data).Kind() == reflect.String && value.Type().Elem().Kind() == reflect.Uint8 {
 			return data, nil
 		}
 		jsonList, ok := data.([]interface{})
 		if !ok {
-			return nil, fmt.Errorf("can not omit nil fields, data was expected to be a list")
+			return nil, fmt.Errorf("can not omit nil fields, data was expected to be a not-nil list")
 		}
 		newList := make([]interface{}, len(jsonList))
 		var err error
@@ -205,7 +210,7 @@ func omitNilFieldsInJSON(data interface{}, value reflect.Value) (interface{}, er
 	case reflect.Map:
 		jsonMap, ok := data.(map[string]interface{})
 		if !ok {
-			return nil, fmt.Errorf("can not omit nil fields, data was expected to be a map")
+			return nil, fmt.Errorf("can not omit nil fields, data was expected to be a not-nil map")
 		}
 		newMap := make(map[string]interface{}, len(jsonMap))
 		var err error
@@ -228,9 +233,15 @@ func omitNilFieldsInJSON(data interface{}, value reflect.Value) (interface{}, er
 // removeNilFieldsInJSONWithTaggedStruct remove struct fields tagged with json and mandatory false
 // that are nil
 func removeNilFieldsInJSONWithTaggedStruct(rawJSON []byte, value reflect.Value) ([]byte, error) {
-	rawMap := make(map[string]interface{})
-	json.Unmarshal(rawJSON, &rawMap)
-	fixedMap, err := omitNilFieldsInJSON(rawMap, value)
+	var rawInterface interface{}
+	decoder := json.NewDecoder(bytes.NewBuffer(rawJSON))
+	decoder.UseNumber()
+	var err error
+	if err = decoder.Decode(&rawInterface); err != nil {
+		return nil, err
+	}
+
+	fixedMap, err := omitNilFieldsInJSON(rawInterface, value)
 	if err != nil {
 		return nil, err
 	}
@@ -240,13 +251,13 @@ func removeNilFieldsInJSONWithTaggedStruct(rawJSON []byte, value reflect.Value) 
 func addToBody(request *http.Request, value reflect.Value, field reflect.StructField) (e error) {
 	Debugln("Marshaling to body from field:", field.Name)
 	if request.Body != nil {
-		Logln("The body of the request is already set. Structure: ", field.Name, " will overwrite it")
+		Logf("The body of the request is already set. Structure: %s will overwrite it\n", field.Name)
 	}
 	tag := field.Tag
 	encoding := tag.Get("encoding")
 
 	if encoding == "binary" {
-		return addBinaryBody(request, value)
+		return addBinaryBody(request, value, field)
 	}
 
 	rawJSON, e := json.Marshal(value.Interface())
@@ -257,7 +268,11 @@ func addToBody(request *http.Request, value reflect.Value, field reflect.StructF
 	if e != nil {
 		return
 	}
-	Debugf("Marshaled body is: %s", string(marshaled))
+
+	if defaultLogger.LogLevel() == verboseLogging {
+		Debugf("Marshaled body is: %s\n", string(marshaled))
+	}
+
 	bodyBytes := bytes.NewReader(marshaled)
 	request.ContentLength = int64(bodyBytes.Len())
 	request.Header.Set(requestHeaderContentLength, strconv.FormatInt(request.ContentLength, 10))
@@ -270,7 +285,7 @@ func addToBody(request *http.Request, value reflect.Value, field reflect.StructF
 }
 
 func addToQuery(request *http.Request, value reflect.Value, field reflect.StructField) (e error) {
-	Debugln("Marshaling to query from field:", field.Name)
+	Debugln("Marshaling to query from field: ", field.Name)
 	if request.URL == nil {
 		request.URL = &url.URL{}
 	}
@@ -379,7 +394,7 @@ func addToPath(request *http.Request, value reflect.Value, field reflect.StructF
 			return
 		}
 		urlTemplate := currentURLPath
-		Debugln("Marshaling to path from field:", field.Name, "in template:", urlTemplate)
+		Debugln("Marshaling to path from field: ", field.Name, " in template: ", urlTemplate)
 		request.URL.Path = strings.Replace(urlTemplate, "{"+fieldName+"}", additionalURLPathPart, -1)
 	}
 	return
@@ -399,7 +414,7 @@ func setWellKnownHeaders(request *http.Request, headerName, headerValue string) 
 }
 
 func addToHeader(request *http.Request, value reflect.Value, field reflect.StructField) (e error) {
-	Debugln("Marshaling to header from field:", field.Name)
+	Debugln("Marshaling to header from field: ", field.Name)
 	if request.Header == nil {
 		request.Header = http.Header{}
 	}
@@ -433,7 +448,7 @@ func addToHeader(request *http.Request, value reflect.Value, field reflect.Struc
 		return
 	}
 
-	request.Header.Set(headerName, headerValue)
+	request.Header.Add(headerName, headerValue)
 	return
 }
 
@@ -526,7 +541,7 @@ func structToRequestPart(request *http.Request, val reflect.Value) (err error) {
 		case "body":
 			err = addToBody(request, sv, sf)
 		case "":
-			Debugln(sf.Name, "does not contain contributes tag. Skipping.")
+			Debugln(sf.Name, " does not contain contributes tag. Skipping.")
 		default:
 			err = fmt.Errorf("can not marshal field: %s. It needs to contain valid contributesTo tag", sf.Name)
 		}
@@ -558,7 +573,7 @@ func HTTPRequestMarshaller(requestStruct interface{}, httpRequest *http.Request)
 		return
 	}
 
-	Debugln("Marshaling to Request:", val.Type().Name())
+	Debugln("Marshaling to Request: ", val.Type().Name())
 	err = structToRequestPart(httpRequest, *val)
 	return
 }
@@ -631,7 +646,7 @@ func intSizeFromKind(kind reflect.Kind) int {
 	case reflect.Int, reflect.Uint:
 		return strconv.IntSize
 	default:
-		Debugln("The type is not valid: %v. Returing int size for arch", kind.String())
+		Debugf("The type is not valid: %v. Returing int size for arch\n", kind.String())
 		return strconv.IntSize
 	}
 
@@ -787,7 +802,7 @@ func valueFromJSONBody(response *http.Response, value *reflect.Value, unmarshale
 }
 
 func addFromBody(response *http.Response, value *reflect.Value, field reflect.StructField, unmarshaler PolymorphicJSONUnmarshaler) (err error) {
-	Debugln("Unmarshaling from body to field:", field.Name)
+	Debugln("Unmarshaling from body to field: ", field.Name)
 	if response.Body == nil {
 		Debugln("Unmarshaling body skipped due to nil body content for field: ", field.Name)
 		return nil
@@ -825,7 +840,7 @@ func addFromBody(response *http.Response, value *reflect.Value, field reflect.St
 }
 
 func addFromHeader(response *http.Response, value *reflect.Value, field reflect.StructField) (err error) {
-	Debugln("Unmarshaling from header to field:", field.Name)
+	Debugln("Unmarshaling from header to field: ", field.Name)
 	var headerName string
 	if headerName = field.Tag.Get("name"); headerName == "" {
 		return fmt.Errorf("unmarshaling response to a header requires the 'name' tag for field: %s", field.Name)
@@ -890,7 +905,7 @@ func responseToStruct(response *http.Response, val *reflect.Value, unmarshaler P
 		case "body":
 			err = addFromBody(response, &sv, sf, unmarshaler)
 		case "":
-			Debugln(sf.Name, "does not contain presentIn tag. Skipping")
+			Debugln(sf.Name, " does not contain presentIn tag. Skipping")
 		default:
 			err = fmt.Errorf("can not unmarshal field: %s. It needs to contain valid presentIn tag", sf.Name)
 		}

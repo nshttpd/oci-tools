@@ -121,7 +121,7 @@ var sdkDateType = reflect.TypeOf(SDKDate{})
 var sdkDateTypePtr = reflect.TypeOf(&SDKDate{})
 
 //Formats for sdk supported time representations
-const sdkTimeFormat = time.RFC3339
+const sdkTimeFormat = time.RFC3339Nano
 const rfc1123OptionalLeadingDigitsInDay = "Mon, _2 Jan 2006 15:04:05 MST"
 const sdkDateFormat = "2006-01-02"
 
@@ -129,7 +129,7 @@ func tryParsingTimeWithValidFormatsForHeaders(data []byte, headerName string) (t
 	header := strings.ToLower(headerName)
 	switch header {
 	case "lastmodified", "date":
-		t, err = tryParsing(data, time.RFC3339, time.RFC1123, rfc1123OptionalLeadingDigitsInDay, time.RFC850, time.ANSIC)
+		t, err = tryParsing(data, time.RFC3339Nano, time.RFC3339, time.RFC1123, rfc1123OptionalLeadingDigitsInDay, time.RFC850, time.ANSIC)
 		return
 	default: //By default we parse with RFC3339
 		t, err = time.Parse(sdkTimeFormat, string(data))
@@ -147,6 +147,21 @@ func tryParsing(data []byte, layouts ...string) (tm time.Time, err error) {
 	}
 	err = fmt.Errorf("Could not parse time: %s with formats: %s", datestring, layouts[:])
 	return
+}
+
+// String returns string representation of SDKDate
+func (t *SDKDate) String() string {
+	return t.Date.Format(sdkDateFormat)
+}
+
+// NewSDKDateFromString parses the dateString into SDKDate
+func NewSDKDateFromString(dateString string) (*SDKDate, error) {
+	parsedTime, err := time.Parse(sdkDateFormat, dateString)
+	if err != nil {
+		return nil, err
+	}
+
+	return &SDKDate{Date: parsedTime}, nil
 }
 
 // UnmarshalJSON unmarshals from json
@@ -221,4 +236,10 @@ func generateRandUUID() (string, error) {
 	uuid := fmt.Sprintf("%x%x%x%x%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
 
 	return uuid, nil
+}
+
+func makeACopy(original []string) []string {
+	tmp := make([]string, len(original))
+	copy(tmp, original)
+	return tmp
 }
