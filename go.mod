@@ -1,4 +1,4 @@
-module github.com/nshttpd/oci-tools
+module oci-tools
 
 go 1.12
 
