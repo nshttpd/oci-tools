@@ -34,7 +34,8 @@ import (
 
 	"os"
 
-	"github.com/nshttpd/oci-tools/utils"
+	"oci-tools/utils"
+
 	"github.com/spf13/cobra"
 )
 

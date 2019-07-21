@@ -34,7 +34,8 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/nshttpd/oci-tools/utils"
+	"oci-tools/utils"
+
 	"github.com/oracle/oci-go-sdk/core"
 	"github.com/spf13/cobra"
 )

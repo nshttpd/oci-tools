@@ -2,8 +2,8 @@
 VERSION=`cat VERSION`
 SHORTSHA=`git rev-parse --short HEAD`
 
-LDFLAGS=-X github.com/nshttpd/oci-tools/cmd/oci-tool/cmd.version=$(VERSION)
-LDFLAGS+=-X github.com/nshttpd/oci-tools/cmd/oci-tool/cmd.shortSha=$(SHORTSHA)
+LDFLAGS=-X oci-tools/cmd/oci-tool/cmd.version=$(VERSION)
+LDFLAGS+=-X oci-tools/cmd/oci-tool/cmd.shortSha=$(SHORTSHA)
 
 build:
 	go build -ldflags "$(LDFLAGS)" .

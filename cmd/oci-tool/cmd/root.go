@@ -33,9 +33,10 @@ import (
 	"fmt"
 	"os"
 
+	"oci-tools/oci"
+	"oci-tools/utils"
+
 	homedir "github.com/mitchellh/go-homedir"
-	"github.com/nshttpd/oci-tools/oci"
-	"github.com/nshttpd/oci-tools/utils"
 	"github.com/spf13/cobra"
 )
 
