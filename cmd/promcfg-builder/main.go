@@ -2,15 +2,16 @@ package main
 
 import (
 	"flag"
-	"os"
-	"github.com/mitchellh/go-homedir"
-	"github.com/nshttpd/oci-tools/utils"
-	"github.com/nshttpd/oci-tools/oci"
-	"sync"
 	"fmt"
-	"text/template"
-	"github.com/oracle/oci-go-sdk/identity"
+	"oci-tools/oci"
+	"oci-tools/utils"
+	"os"
 	"strings"
+	"sync"
+	"text/template"
+
+	"github.com/mitchellh/go-homedir"
+	"github.com/oracle/oci-go-sdk/identity"
 )
 
 const (
@@ -115,6 +116,5 @@ func main() {
 
 	writeConfig(computes, tmpl, promCfg)
 
-
-	return;
+	return
 }

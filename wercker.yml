@@ -1,0 +1,36 @@
+box: golang:1.12
+build:
+  steps:
+#    - wercker/golint@1.4.1:
+#        exclude: vendor
+    - script:
+        name: go get
+        code: |
+          go get github.com/mitchellh/gox
+    - script:
+        name: set environment vars
+        code: |
+          cd cmd/oci-tool
+          set VERSION=`cat VERSION`
+          set SHORTSHA=`git rev-parse --short HEAD`
+          set LDFLAGS=-X github.com/nshttpd/oci-tools/cmd/oci-tool/cmd.version=${VERSION}
+          set LDFLAGS+=-X github.com/nshttpd/oci-tools/cmd/oci-tool/cmd.shortSha=${SHORTSHA}
+          export LDFLAGS
+    - script:
+        name: go build
+        code: |
+          gox -os="linux darwin" -arch="amd64 arm arm64 386" -osarch="!darwin/arm !darwin/arm64" -parallel=2 -ldflags "${LDFLAGS}" -output "dist/oci-tool_{{.OS}}_{{.Arch}}" ./cmd/oci-tool
+          ls -1 dist
+deploy:
+  steps:
+    - script:
+        cwd: cmd/oci-tool
+        name: set version
+        code: |
+          export VERSION=`cat VERSION`
+    - tcnksm/ghr@0.2.0:
+        name: run ghr
+        token: $GITHUB_TOKEN
+        input: dist
+        version: $VERSION
+        replace: true
