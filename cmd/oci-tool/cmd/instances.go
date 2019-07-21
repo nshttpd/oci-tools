@@ -37,8 +37,9 @@ import (
 
 	"sync"
 
-	"github.com/nshttpd/oci-tools/oci"
-	"github.com/nshttpd/oci-tools/utils"
+	"oci-tools/oci"
+	"oci-tools/utils"
+
 	"github.com/oracle/oci-go-sdk/identity"
 	"github.com/spf13/cobra"
 )

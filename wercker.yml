@@ -13,8 +13,8 @@ build:
           cd cmd/oci-tool
           set VERSION=`cat VERSION`
           set SHORTSHA=`git rev-parse --short HEAD`
-          set LDFLAGS=-X github.com/nshttpd/oci-tools/cmd/oci-tool/cmd.version=${VERSION}
-          set LDFLAGS+=-X github.com/nshttpd/oci-tools/cmd/oci-tool/cmd.shortSha=${SHORTSHA}
+          set LDFLAGS=-X oci-tools/cmd/oci-tool/cmd.version=${VERSION}
+          set LDFLAGS+=-X oci-tools/cmd/oci-tool/cmd.shortSha=${SHORTSHA}
           export LDFLAGS
     - script:
         name: go build
