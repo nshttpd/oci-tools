@@ -56,6 +56,9 @@ type Instance struct {
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
 
+	// The OCID of dedicated VM host.
+	DedicatedVmHostId *string `mandatory:"false" json:"dedicatedVmHostId"`
+
 	// Defined tags for this resource. Each key is predefined and scoped to a
 	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
@@ -124,6 +127,10 @@ type Instance struct {
 	// Details for creating an instance
 	SourceDetails InstanceSourceDetails `mandatory:"false" json:"sourceDetails"`
 
+	// System tags for this resource. Each key is predefined and scoped to a namespace.
+	// Example: `{"foo-namespace": {"bar-key": "value"}}`
+	SystemTags map[string]map[string]interface{} `mandatory:"false" json:"systemTags"`
+
 	AgentConfig *InstanceAgentConfig `mandatory:"false" json:"agentConfig"`
 
 	// The date and time the instance is expected to be stopped / started,  in the format defined by RFC3339.
@@ -140,6 +147,7 @@ func (m Instance) String() string {
 // UnmarshalJSON unmarshals from json
 func (m *Instance) UnmarshalJSON(data []byte) (e error) {
 	model := struct {
+		DedicatedVmHostId        *string                           `json:"dedicatedVmHostId"`
 		DefinedTags              map[string]map[string]interface{} `json:"definedTags"`
 		DisplayName              *string                           `json:"displayName"`
 		ExtendedMetadata         map[string]interface{}            `json:"extendedMetadata"`
@@ -151,6 +159,7 @@ func (m *Instance) UnmarshalJSON(data []byte) (e error) {
 		LaunchOptions            *LaunchOptions                    `json:"launchOptions"`
 		Metadata                 map[string]string                 `json:"metadata"`
 		SourceDetails            instancesourcedetails             `json:"sourceDetails"`
+		SystemTags               map[string]map[string]interface{} `json:"systemTags"`
 		AgentConfig              *InstanceAgentConfig              `json:"agentConfig"`
 		TimeMaintenanceRebootDue *common.SDKTime                   `json:"timeMaintenanceRebootDue"`
 		AvailabilityDomain       *string                           `json:"availabilityDomain"`
@@ -166,6 +175,7 @@ func (m *Instance) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	m.DedicatedVmHostId = model.DedicatedVmHostId
 	m.DefinedTags = model.DefinedTags
 	m.DisplayName = model.DisplayName
 	m.ExtendedMetadata = model.ExtendedMetadata
@@ -185,6 +195,7 @@ func (m *Instance) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.SourceDetails = nil
 	}
+	m.SystemTags = model.SystemTags
 	m.AgentConfig = model.AgentConfig
 	m.TimeMaintenanceRebootDue = model.TimeMaintenanceRebootDue
 	m.AvailabilityDomain = model.AvailabilityDomain
