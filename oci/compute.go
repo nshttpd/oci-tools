@@ -23,11 +23,11 @@ type Compute struct {
 
 func (cc *ClientConfig) GetComputeInstances(compartment identity.Compartment) ([]*Compute, error) {
 	client, err := core.NewComputeClientWithConfigurationProvider(cc.Config())
-	client.SetRegion(cc.Region)
 	if err != nil {
 		// when real logging is here DEBUG stuff can go here.
 		return nil, err
 	}
+	client.SetRegion(cc.Region)
 
 	var more = true
 	var next *string
