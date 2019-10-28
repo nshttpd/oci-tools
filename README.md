@@ -1,4 +1,8 @@
-### oci-tool
+### oci-tools
+
+A collection of various tools that can be utilized by an Oracle Cloud Infrastructure (OCI) customer.
+
+#### oci-tool
 
 The [oci-cli](https://github.com/oracle/oci-cli) is a great tool for accessing your
 tenancy and doing all those things you may want to do for your infrastructure. There
