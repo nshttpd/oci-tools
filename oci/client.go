@@ -21,6 +21,14 @@ func CreateConfig(file string, profile string, region string) (ClientConfig, err
 		return ClientConfig{}, err
 	}
 
+	v, err := common.IsConfigurationProviderValid(c)
+	if !v {
+		return ClientConfig{}, fmt.Errorf("invalid profile configuration")
+	}
+	if err != nil {
+		return ClientConfig{}, err
+	}
+
 	t, _ := c.TenancyOCID()
 	u, _ := c.UserOCID()
 	f, _ := c.KeyFingerprint()
