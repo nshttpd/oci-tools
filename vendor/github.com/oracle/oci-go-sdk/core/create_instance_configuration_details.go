@@ -17,10 +17,11 @@ import (
 	"github.com/oracle/oci-go-sdk/common"
 )
 
-// CreateInstanceConfigurationDetails An instance configuration that can be used to launch
+// CreateInstanceConfigurationDetails Details for creating an instance configuration by providing a list of configuration settings.
 type CreateInstanceConfigurationDetails struct {
 
-	// The OCID of the compartment containing the instance configuration.
+	// The OCID (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/identifiers.htm) of the compartment
+	// containing the instance configuration.
 	CompartmentId *string `mandatory:"true" json:"compartmentId"`
 
 	InstanceDetails InstanceConfigurationInstanceDetails `mandatory:"true" json:"instanceDetails"`
@@ -30,7 +31,8 @@ type CreateInstanceConfigurationDetails struct {
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
-	// A user-friendly name for the instance configuration
+	// A user-friendly name for the instance configuration.  Does not have to be unique,
+	// and it's changeable. Avoid entering confidential information.
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
@@ -39,8 +41,42 @@ type CreateInstanceConfigurationDetails struct {
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 }
 
+//GetCompartmentId returns CompartmentId
+func (m CreateInstanceConfigurationDetails) GetCompartmentId() *string {
+	return m.CompartmentId
+}
+
+//GetDefinedTags returns DefinedTags
+func (m CreateInstanceConfigurationDetails) GetDefinedTags() map[string]map[string]interface{} {
+	return m.DefinedTags
+}
+
+//GetDisplayName returns DisplayName
+func (m CreateInstanceConfigurationDetails) GetDisplayName() *string {
+	return m.DisplayName
+}
+
+//GetFreeformTags returns FreeformTags
+func (m CreateInstanceConfigurationDetails) GetFreeformTags() map[string]string {
+	return m.FreeformTags
+}
+
 func (m CreateInstanceConfigurationDetails) String() string {
 	return common.PointerString(m)
+}
+
+// MarshalJSON marshals to json representation
+func (m CreateInstanceConfigurationDetails) MarshalJSON() (buff []byte, e error) {
+	type MarshalTypeCreateInstanceConfigurationDetails CreateInstanceConfigurationDetails
+	s := struct {
+		DiscriminatorParam string `json:"source"`
+		MarshalTypeCreateInstanceConfigurationDetails
+	}{
+		"NONE",
+		(MarshalTypeCreateInstanceConfigurationDetails)(m),
+	}
+
+	return json.Marshal(&s)
 }
 
 // UnmarshalJSON unmarshals from json
@@ -57,11 +93,16 @@ func (m *CreateInstanceConfigurationDetails) UnmarshalJSON(data []byte) (e error
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.DefinedTags = model.DefinedTags
+
 	m.DisplayName = model.DisplayName
+
 	m.FreeformTags = model.FreeformTags
+
 	m.CompartmentId = model.CompartmentId
-	nn, e := model.InstanceDetails.UnmarshalPolymorphicJSON(model.InstanceDetails.JsonData)
+
+	nn, e = model.InstanceDetails.UnmarshalPolymorphicJSON(model.InstanceDetails.JsonData)
 	if e != nil {
 		return
 	}

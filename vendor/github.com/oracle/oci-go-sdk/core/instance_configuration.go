@@ -17,15 +17,16 @@ import (
 	"github.com/oracle/oci-go-sdk/common"
 )
 
-// InstanceConfiguration An instance configuration is a template that defines the settings to use when creating Compute instances
-// as part of an instance pool. For more information about instance pools and instance configurations, see
+// InstanceConfiguration An instance configuration is a template that defines the settings to use when creating Compute instances.
+// For more information about instance configurations, see
 // Managing Compute Instances (https://docs.cloud.oracle.com/Content/Compute/Concepts/instancemanagement.htm).
 type InstanceConfiguration struct {
 
-	// The OCID of the compartment containing the instance configuration.
+	// The OCID (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/identifiers.htm) of the compartment
+	// containing the instance configuration.
 	CompartmentId *string `mandatory:"true" json:"compartmentId"`
 
-	// The OCID of the instance configuration
+	// The OCID (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/identifiers.htm) of the instance configuration.
 	Id *string `mandatory:"true" json:"id"`
 
 	// The date and time the instance configuration was created, in the format defined by RFC3339.
@@ -37,7 +38,7 @@ type InstanceConfiguration struct {
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
-	// A user-friendly name for the instance configuration
+	// A user-friendly name for the instance configuration.
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
@@ -47,8 +48,9 @@ type InstanceConfiguration struct {
 
 	InstanceDetails InstanceConfigurationInstanceDetails `mandatory:"false" json:"instanceDetails"`
 
-	// The required details when using the LaunchInstanceConfiguration operation.
-	// These attributes are optional when using the CreateInstanceConfiguration operation.
+	// Parameters that were not specified when the instance configuration was created, but that
+	// are required to launch an instance from the instance configuration. See the
+	// LaunchInstanceConfiguration operation.
 	DeferredFields []string `mandatory:"false" json:"deferredFields"`
 }
 
@@ -73,10 +75,14 @@ func (m *InstanceConfiguration) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.DefinedTags = model.DefinedTags
+
 	m.DisplayName = model.DisplayName
+
 	m.FreeformTags = model.FreeformTags
-	nn, e := model.InstanceDetails.UnmarshalPolymorphicJSON(model.InstanceDetails.JsonData)
+
+	nn, e = model.InstanceDetails.UnmarshalPolymorphicJSON(model.InstanceDetails.JsonData)
 	if e != nil {
 		return
 	}
@@ -85,12 +91,16 @@ func (m *InstanceConfiguration) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.InstanceDetails = nil
 	}
+
 	m.DeferredFields = make([]string, len(model.DeferredFields))
 	for i, n := range model.DeferredFields {
 		m.DeferredFields[i] = n
 	}
+
 	m.CompartmentId = model.CompartmentId
+
 	m.Id = model.Id
+
 	m.TimeCreated = model.TimeCreated
 	return
 }

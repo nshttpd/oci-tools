@@ -32,6 +32,10 @@ type UpdateVirtualCircuitDetails struct {
 	// CrossConnectMapping.
 	CrossConnectMappings []CrossConnectMapping `mandatory:"false" json:"crossConnectMappings"`
 
+	// Deprecated. Instead use `customerAsn`.
+	// If you specify values for both, the request will be rejected.
+	CustomerBgpAsn *int `mandatory:"false" json:"customerBgpAsn"`
+
 	// The BGP ASN of the network at the other end of the BGP
 	// session from Oracle.
 	// If the BGP session is from the customer's edge router to Oracle, the
@@ -40,12 +44,23 @@ type UpdateVirtualCircuitDetails struct {
 	// If the BGP session is from the provider's edge router to Oracle, the
 	// required value is the provider's ASN, and it can be updated only
 	// by the provider.
-	CustomerBgpAsn *int `mandatory:"false" json:"customerBgpAsn"`
+	// Can be a 2-byte or 4-byte ASN. Uses "asplain" format.
+	CustomerAsn *int64 `mandatory:"false" json:"customerAsn"`
+
+	// Defined tags for this resource. Each key is predefined and scoped to a
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// Example: `{"Operations": {"CostCenter": "42"}}`
+	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
 	// A user-friendly name. Does not have to be unique.
 	// Avoid entering confidential information.
 	// To be updated only by the customer who owns the virtual circuit.
 	DisplayName *string `mandatory:"false" json:"displayName"`
+
+	// Free-form tags for this resource. Each tag is a simple key-value pair with no
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// Example: `{"Department": "Finance"}`
+	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
 	// The OCID of the Drg
 	// that this private virtual circuit uses.

@@ -60,11 +60,18 @@ type Volume struct {
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
+	// System tags for this resource. Each key is predefined and scoped to a namespace.
+	// Example: `{"foo-namespace": {"bar-key": "value"}}`
+	SystemTags map[string]map[string]interface{} `mandatory:"false" json:"systemTags"`
+
 	// Specifies whether the cloned volume's data has finished copying from the source volume or backup.
 	IsHydrated *bool `mandatory:"false" json:"isHydrated"`
 
 	// The OCID of the KMS key which is the master encryption key for the volume.
 	KmsKeyId *string `mandatory:"false" json:"kmsKeyId"`
+
+	// The number of Volume Performance Units that will be applied to this volume per GB.
+	VpusPerGB *int64 `mandatory:"false" json:"vpusPerGB"`
 
 	// The size of the volume in GBs.
 	SizeInGBs *int64 `mandatory:"false" json:"sizeInGBs"`
@@ -86,8 +93,10 @@ func (m *Volume) UnmarshalJSON(data []byte) (e error) {
 	model := struct {
 		DefinedTags        map[string]map[string]interface{} `json:"definedTags"`
 		FreeformTags       map[string]string                 `json:"freeformTags"`
+		SystemTags         map[string]map[string]interface{} `json:"systemTags"`
 		IsHydrated         *bool                             `json:"isHydrated"`
 		KmsKeyId           *string                           `json:"kmsKeyId"`
+		VpusPerGB          *int64                            `json:"vpusPerGB"`
 		SizeInGBs          *int64                            `json:"sizeInGBs"`
 		SourceDetails      volumesourcedetails               `json:"sourceDetails"`
 		VolumeGroupId      *string                           `json:"volumeGroupId"`
@@ -104,12 +113,22 @@ func (m *Volume) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.DefinedTags = model.DefinedTags
+
 	m.FreeformTags = model.FreeformTags
+
+	m.SystemTags = model.SystemTags
+
 	m.IsHydrated = model.IsHydrated
+
 	m.KmsKeyId = model.KmsKeyId
+
+	m.VpusPerGB = model.VpusPerGB
+
 	m.SizeInGBs = model.SizeInGBs
-	nn, e := model.SourceDetails.UnmarshalPolymorphicJSON(model.SourceDetails.JsonData)
+
+	nn, e = model.SourceDetails.UnmarshalPolymorphicJSON(model.SourceDetails.JsonData)
 	if e != nil {
 		return
 	}
@@ -118,13 +137,21 @@ func (m *Volume) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.SourceDetails = nil
 	}
+
 	m.VolumeGroupId = model.VolumeGroupId
+
 	m.AvailabilityDomain = model.AvailabilityDomain
+
 	m.CompartmentId = model.CompartmentId
+
 	m.DisplayName = model.DisplayName
+
 	m.Id = model.Id
+
 	m.LifecycleState = model.LifecycleState
+
 	m.SizeInMBs = model.SizeInMBs
+
 	m.TimeCreated = model.TimeCreated
 	return
 }

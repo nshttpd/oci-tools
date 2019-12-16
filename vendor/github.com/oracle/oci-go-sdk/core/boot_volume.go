@@ -51,6 +51,10 @@ type BootVolume struct {
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
+	// System tags for this resource. Each key is predefined and scoped to a namespace.
+	// Example: `{"foo-namespace": {"bar-key": "value"}}`
+	SystemTags map[string]map[string]interface{} `mandatory:"false" json:"systemTags"`
+
 	// A user-friendly name. Does not have to be unique, and it's changeable.
 	// Avoid entering confidential information.
 	DisplayName *string `mandatory:"false" json:"displayName"`
@@ -65,6 +69,9 @@ type BootVolume struct {
 
 	// Specifies whether the boot volume's data has finished copying from the source boot volume or boot volume backup.
 	IsHydrated *bool `mandatory:"false" json:"isHydrated"`
+
+	// The number of Volume Performance Units that will be applied to this boot volume per GB.
+	VpusPerGB *int64 `mandatory:"false" json:"vpusPerGB"`
 
 	// The size of the boot volume in GBs.
 	SizeInGBs *int64 `mandatory:"false" json:"sizeInGBs"`
@@ -88,10 +95,12 @@ func (m BootVolume) String() string {
 func (m *BootVolume) UnmarshalJSON(data []byte) (e error) {
 	model := struct {
 		DefinedTags        map[string]map[string]interface{} `json:"definedTags"`
+		SystemTags         map[string]map[string]interface{} `json:"systemTags"`
 		DisplayName        *string                           `json:"displayName"`
 		FreeformTags       map[string]string                 `json:"freeformTags"`
 		ImageId            *string                           `json:"imageId"`
 		IsHydrated         *bool                             `json:"isHydrated"`
+		VpusPerGB          *int64                            `json:"vpusPerGB"`
 		SizeInGBs          *int64                            `json:"sizeInGBs"`
 		SourceDetails      bootvolumesourcedetails           `json:"sourceDetails"`
 		VolumeGroupId      *string                           `json:"volumeGroupId"`
@@ -108,13 +117,24 @@ func (m *BootVolume) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.DefinedTags = model.DefinedTags
+
+	m.SystemTags = model.SystemTags
+
 	m.DisplayName = model.DisplayName
+
 	m.FreeformTags = model.FreeformTags
+
 	m.ImageId = model.ImageId
+
 	m.IsHydrated = model.IsHydrated
+
+	m.VpusPerGB = model.VpusPerGB
+
 	m.SizeInGBs = model.SizeInGBs
-	nn, e := model.SourceDetails.UnmarshalPolymorphicJSON(model.SourceDetails.JsonData)
+
+	nn, e = model.SourceDetails.UnmarshalPolymorphicJSON(model.SourceDetails.JsonData)
 	if e != nil {
 		return
 	}
@@ -123,13 +143,21 @@ func (m *BootVolume) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.SourceDetails = nil
 	}
+
 	m.VolumeGroupId = model.VolumeGroupId
+
 	m.KmsKeyId = model.KmsKeyId
+
 	m.AvailabilityDomain = model.AvailabilityDomain
+
 	m.CompartmentId = model.CompartmentId
+
 	m.Id = model.Id
+
 	m.LifecycleState = model.LifecycleState
+
 	m.SizeInMBs = model.SizeInMBs
+
 	m.TimeCreated = model.TimeCreated
 	return
 }

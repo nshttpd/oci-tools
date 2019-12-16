@@ -37,6 +37,9 @@ type LaunchInstanceDetails struct {
 	// the instance is launched.
 	CreateVnicDetails *CreateVnicDetails `mandatory:"false" json:"createVnicDetails"`
 
+	// The OCID of dedicated VM host.
+	DedicatedVmHostId *string `mandatory:"false" json:"dedicatedVmHostId"`
+
 	// Defined tags for this resource. Each key is predefined and scoped to a
 	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
@@ -98,6 +101,8 @@ type LaunchInstanceDetails struct {
 	// Bring Your Own Image (https://docs.cloud.oracle.com/Content/Compute/References/bringyourownimage.htm).
 	// For more information about iPXE, see http://ipxe.org.
 	IpxeScript *string `mandatory:"false" json:"ipxeScript"`
+
+	LaunchOptions *LaunchOptions `mandatory:"false" json:"launchOptions"`
 
 	// Custom metadata key/value pairs that you provide, such as the SSH public key
 	// required to connect to the instance.
@@ -167,6 +172,7 @@ func (m LaunchInstanceDetails) String() string {
 func (m *LaunchInstanceDetails) UnmarshalJSON(data []byte) (e error) {
 	model := struct {
 		CreateVnicDetails              *CreateVnicDetails                `json:"createVnicDetails"`
+		DedicatedVmHostId              *string                           `json:"dedicatedVmHostId"`
 		DefinedTags                    map[string]map[string]interface{} `json:"definedTags"`
 		DisplayName                    *string                           `json:"displayName"`
 		ExtendedMetadata               map[string]interface{}            `json:"extendedMetadata"`
@@ -175,6 +181,7 @@ func (m *LaunchInstanceDetails) UnmarshalJSON(data []byte) (e error) {
 		HostnameLabel                  *string                           `json:"hostnameLabel"`
 		ImageId                        *string                           `json:"imageId"`
 		IpxeScript                     *string                           `json:"ipxeScript"`
+		LaunchOptions                  *LaunchOptions                    `json:"launchOptions"`
 		Metadata                       map[string]string                 `json:"metadata"`
 		AgentConfig                    *LaunchInstanceAgentConfigDetails `json:"agentConfig"`
 		SourceDetails                  instancesourcedetails             `json:"sourceDetails"`
@@ -189,18 +196,34 @@ func (m *LaunchInstanceDetails) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.CreateVnicDetails = model.CreateVnicDetails
+
+	m.DedicatedVmHostId = model.DedicatedVmHostId
+
 	m.DefinedTags = model.DefinedTags
+
 	m.DisplayName = model.DisplayName
+
 	m.ExtendedMetadata = model.ExtendedMetadata
+
 	m.FaultDomain = model.FaultDomain
+
 	m.FreeformTags = model.FreeformTags
+
 	m.HostnameLabel = model.HostnameLabel
+
 	m.ImageId = model.ImageId
+
 	m.IpxeScript = model.IpxeScript
+
+	m.LaunchOptions = model.LaunchOptions
+
 	m.Metadata = model.Metadata
+
 	m.AgentConfig = model.AgentConfig
-	nn, e := model.SourceDetails.UnmarshalPolymorphicJSON(model.SourceDetails.JsonData)
+
+	nn, e = model.SourceDetails.UnmarshalPolymorphicJSON(model.SourceDetails.JsonData)
 	if e != nil {
 		return
 	}
@@ -209,10 +232,15 @@ func (m *LaunchInstanceDetails) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.SourceDetails = nil
 	}
+
 	m.SubnetId = model.SubnetId
+
 	m.IsPvEncryptionInTransitEnabled = model.IsPvEncryptionInTransitEnabled
+
 	m.AvailabilityDomain = model.AvailabilityDomain
+
 	m.CompartmentId = model.CompartmentId
+
 	m.Shape = model.Shape
 	return
 }

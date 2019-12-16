@@ -136,12 +136,57 @@ func (client IdentityClient) AddUserToGroup(ctx context.Context, request AddUser
 
 // addUserToGroup implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) addUserToGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/userGroupMemberships/")
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/userGroupMemberships")
 	if err != nil {
 		return nil, err
 	}
 
 	var response AddUserToGroupResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// AssembleEffectiveTagSet Assembles tag defaults in the specified compartment and any parent compartments to determine
+// the tags to apply. Tag defaults from parent compartments do not override tag defaults
+// referencing the same tag in a compartment lower down the hierarchy. This set of tag defaults
+// includes all tag defaults from the current compartment back to the root compartment.
+func (client IdentityClient) AssembleEffectiveTagSet(ctx context.Context, request AssembleEffectiveTagSetRequest) (response AssembleEffectiveTagSetResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.assembleEffectiveTagSet, policy)
+	if err != nil {
+		if ociResponse != nil {
+			response = AssembleEffectiveTagSetResponse{RawResponse: ociResponse.HTTPResponse()}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(AssembleEffectiveTagSetResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into AssembleEffectiveTagSetResponse")
+	}
+	return
+}
+
+// assembleEffectiveTagSet implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) assembleEffectiveTagSet(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagDefaults/actions/assembleEffectiveTagSet")
+	if err != nil {
+		return nil, err
+	}
+
+	var response AssembleEffectiveTagSetResponse
 	var httpResponse *http.Response
 	httpResponse, err = client.Call(ctx, &httpRequest)
 	defer common.CloseBodyIfValid(httpResponse)
@@ -240,7 +285,7 @@ func (client IdentityClient) CreateAuthToken(ctx context.Context, request Create
 
 // createAuthToken implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) createAuthToken(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/authTokens/")
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/authTokens")
 	if err != nil {
 		return nil, err
 	}
@@ -300,7 +345,7 @@ func (client IdentityClient) CreateCompartment(ctx context.Context, request Crea
 
 // createCompartment implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) createCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/compartments/")
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/compartments")
 	if err != nil {
 		return nil, err
 	}
@@ -355,7 +400,7 @@ func (client IdentityClient) CreateCustomerSecretKey(ctx context.Context, reques
 
 // createCustomerSecretKey implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) createCustomerSecretKey(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/customerSecretKeys/")
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/customerSecretKeys")
 	if err != nil {
 		return nil, err
 	}
@@ -415,7 +460,7 @@ func (client IdentityClient) CreateDynamicGroup(ctx context.Context, request Cre
 
 // createDynamicGroup implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) createDynamicGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/dynamicGroups/")
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/dynamicGroups")
 	if err != nil {
 		return nil, err
 	}
@@ -477,7 +522,7 @@ func (client IdentityClient) CreateGroup(ctx context.Context, request CreateGrou
 
 // createGroup implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) createGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/groups/")
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/groups")
 	if err != nil {
 		return nil, err
 	}
@@ -537,7 +582,7 @@ func (client IdentityClient) CreateIdentityProvider(ctx context.Context, request
 
 // createIdentityProvider implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) createIdentityProvider(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/identityProviders/")
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/identityProviders")
 	if err != nil {
 		return nil, err
 	}
@@ -585,7 +630,7 @@ func (client IdentityClient) CreateIdpGroupMapping(ctx context.Context, request 
 
 // createIdpGroupMapping implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) createIdpGroupMapping(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/identityProviders/{identityProviderId}/groupMappings/")
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/identityProviders/{identityProviderId}/groupMappings")
 	if err != nil {
 		return nil, err
 	}
@@ -745,7 +790,7 @@ func (client IdentityClient) CreatePolicy(ctx context.Context, request CreatePol
 
 // createPolicy implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) createPolicy(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/policies/")
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/policies")
 	if err != nil {
 		return nil, err
 	}
@@ -842,7 +887,7 @@ func (client IdentityClient) CreateSmtpCredential(ctx context.Context, request C
 
 // createSmtpCredential implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) createSmtpCredential(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/smtpCredentials/")
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/smtpCredentials")
 	if err != nil {
 		return nil, err
 	}
@@ -897,7 +942,7 @@ func (client IdentityClient) CreateSwiftPassword(ctx context.Context, request Cr
 
 // createSwiftPassword implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) createSwiftPassword(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/swiftPasswords/")
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/swiftPasswords")
 	if err != nil {
 		return nil, err
 	}
@@ -916,14 +961,22 @@ func (client IdentityClient) createSwiftPassword(ctx context.Context, request co
 }
 
 // CreateTag Creates a new tag in the specified tag namespace.
-// You must specify either the OCID or the name of the tag namespace that will contain this tag definition.
-// You must also specify a *name* for the tag, which must be unique across all tags in the tag namespace
+// The tag requires either the OCID or the name of the tag namespace that will contain this
+// tag definition.
+// You must specify a *name* for the tag, which must be unique across all tags in the tag namespace
 // and cannot be changed. The name can contain any ASCII character except the space (_) or period (.) characters.
 // Names are case insensitive. That means, for example, "myTag" and "mytag" are not allowed in the same namespace.
 // If you specify a name that's already in use in the tag namespace, a 409 error is returned.
-// You must also specify a *description* for the tag.
-// It does not have to be unique, and you can change it with
+// The tag must have a *description*. It does not have to be unique, and you can change it with
 // UpdateTag.
+// The tag must have a value type, which is specified with a validator. Tags can use either a
+// static value or a list of possible values. Static values are entered by a user applying the tag
+// to a resource. Lists are created by you and the user must apply a value from the list. Lists
+// are validiated.
+// * If no `validator` is set, the user applying the tag to a resource can type in a static
+// value or leave the tag value empty.
+// * If a `validator` is set, the user applying the tag to a resource must select from a list
+// of values that you supply with EnumTagDefinitionValidator.
 func (client IdentityClient) CreateTag(ctx context.Context, request CreateTagRequest) (response CreateTagResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
@@ -971,6 +1024,11 @@ func (client IdentityClient) createTag(ctx context.Context, request common.OCIRe
 }
 
 // CreateTagDefault Creates a new tag default in the specified compartment for the specified tag definition.
+// If you specify that a value is required, a value is set during resource creation (either by
+// the user creating the resource or another tag defualt). If no value is set, resource creation
+// is blocked.
+// * If the `isRequired` flag is set to "true", the value is set during resource creation.
+// * If the `isRequired` flag is set to "false", the value you enter is set during resource creation.
 func (client IdentityClient) CreateTagDefault(ctx context.Context, request CreateTagDefaultRequest) (response CreateTagDefaultResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
@@ -1028,8 +1086,6 @@ func (client IdentityClient) createTagDefault(ctx context.Context, request commo
 // You must also specify a *description* for the namespace.
 // It does not have to be unique, and you can change it with
 // UpdateTagNamespace.
-// Tag namespaces cannot be deleted, but they can be retired.
-// See Retiring Key Definitions and Namespace Definitions (https://docs.cloud.oracle.com/Content/Identity/Concepts/taggingoverview.htm#Retiring) for more information.
 func (client IdentityClient) CreateTagNamespace(ctx context.Context, request CreateTagNamespaceRequest) (response CreateTagNamespaceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
@@ -1133,7 +1189,7 @@ func (client IdentityClient) CreateUser(ctx context.Context, request CreateUserR
 
 // createUser implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) createUser(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/")
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users")
 	if err != nil {
 		return nil, err
 	}
@@ -1661,7 +1717,21 @@ func (client IdentityClient) deleteSwiftPassword(ctx context.Context, request co
 	return response, err
 }
 
-// DeleteTag Deletes the the specified tag definition.
+// DeleteTag Deletes the specified tag definition. This operation triggers a process that removes the
+// tag from all resources in your tenancy.
+// These things happen immediately:
+//
+//   * If the tag was a cost-tracking tag, it no longer counts against your 10 cost-tracking
+//   tags limit, whether you first disabled it or not.
+//   * If the tag was used with dynamic groups, none of the rules that contain the tag will
+//   be evaluated against the tag.
+// Once you start the delete operation, the state of the tag changes to DELETING and tag removal
+// from resources begins. This can take up to 48 hours depending on the number of resources that
+// were tagged as well as the regions in which those resources reside. When all tags have been
+// removed, the state changes to DELETED. You cannot restore a deleted tag. Once the deleted tag
+// changes its state to DELETED, you can use the same tag name again.
+// To delete a tag, you must first retire it. Use UpdateTag
+// to retire a tag.
 func (client IdentityClient) DeleteTag(ctx context.Context, request DeleteTagRequest) (response DeleteTagResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
@@ -1745,8 +1815,9 @@ func (client IdentityClient) deleteTagDefault(ctx context.Context, request commo
 	return response, err
 }
 
-// DeleteTagNamespace Delete the specified tag namespace. Only an empty tagnamespace can be deleted.
-// If the tag namespace you are trying to delete is not empty, please remove tag definitions from it first.
+// DeleteTagNamespace Deletes the specified tag namespace. Only an empty tag namespace can be deleted. To delete
+// a tag namespace, first delete all its tag definitions.
+// Use DeleteTag to delete a tag definition.
 func (client IdentityClient) DeleteTagNamespace(ctx context.Context, request DeleteTagNamespaceRequest) (response DeleteTagNamespaceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
@@ -2344,6 +2415,49 @@ func (client IdentityClient) getTagNamespace(ctx context.Context, request common
 	return response, err
 }
 
+// GetTaggingWorkRequest Gets details on a specified work request. The workRequestID is returned in the opc-workrequest-id header
+// for any asynchronous operation in the Identity and Access Management service.
+func (client IdentityClient) GetTaggingWorkRequest(ctx context.Context, request GetTaggingWorkRequestRequest) (response GetTaggingWorkRequestResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getTaggingWorkRequest, policy)
+	if err != nil {
+		if ociResponse != nil {
+			response = GetTaggingWorkRequestResponse{RawResponse: ociResponse.HTTPResponse()}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetTaggingWorkRequestResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetTaggingWorkRequestResponse")
+	}
+	return
+}
+
+// getTaggingWorkRequest implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) getTaggingWorkRequest(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/taggingWorkRequests/{workRequestId}")
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetTaggingWorkRequestResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // GetTenancy Get the specified tenancy's information.
 func (client IdentityClient) GetTenancy(ctx context.Context, request GetTenancyRequest) (response GetTenancyResponse, err error) {
 	var ociResponse common.OCIResponse
@@ -2582,7 +2696,7 @@ func (client IdentityClient) ListApiKeys(ctx context.Context, request ListApiKey
 
 // listApiKeys implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listApiKeys(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/apiKeys/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/apiKeys")
 	if err != nil {
 		return nil, err
 	}
@@ -2625,7 +2739,7 @@ func (client IdentityClient) ListAuthTokens(ctx context.Context, request ListAut
 
 // listAuthTokens implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listAuthTokens(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/authTokens/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/authTokens")
 	if err != nil {
 		return nil, err
 	}
@@ -2671,7 +2785,7 @@ func (client IdentityClient) ListAvailabilityDomains(ctx context.Context, reques
 
 // listAvailabilityDomains implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listAvailabilityDomains(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/availabilityDomains/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/availabilityDomains")
 	if err != nil {
 		return nil, err
 	}
@@ -2726,7 +2840,7 @@ func (client IdentityClient) ListCompartments(ctx context.Context, request ListC
 
 // listCompartments implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listCompartments(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/compartments/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/compartments")
 	if err != nil {
 		return nil, err
 	}
@@ -2812,7 +2926,7 @@ func (client IdentityClient) ListCustomerSecretKeys(ctx context.Context, request
 
 // listCustomerSecretKeys implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listCustomerSecretKeys(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/customerSecretKeys/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/customerSecretKeys")
 	if err != nil {
 		return nil, err
 	}
@@ -2856,7 +2970,7 @@ func (client IdentityClient) ListDynamicGroups(ctx context.Context, request List
 
 // listDynamicGroups implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listDynamicGroups(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dynamicGroups/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dynamicGroups")
 	if err != nil {
 		return nil, err
 	}
@@ -2900,7 +3014,7 @@ func (client IdentityClient) ListFaultDomains(ctx context.Context, request ListF
 
 // listFaultDomains implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listFaultDomains(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/faultDomains/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/faultDomains")
 	if err != nil {
 		return nil, err
 	}
@@ -2944,7 +3058,7 @@ func (client IdentityClient) ListGroups(ctx context.Context, request ListGroupsR
 
 // listGroups implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listGroups(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/groups/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/groups")
 	if err != nil {
 		return nil, err
 	}
@@ -2986,7 +3100,7 @@ func (client IdentityClient) ListIdentityProviderGroups(ctx context.Context, req
 
 // listIdentityProviderGroups implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listIdentityProviderGroups(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders/{identityProviderId}/groups/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders/{identityProviderId}/groups")
 	if err != nil {
 		return nil, err
 	}
@@ -3047,7 +3161,7 @@ func (client IdentityClient) ListIdentityProviders(ctx context.Context, request 
 
 // listIdentityProviders implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listIdentityProviders(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders")
 	if err != nil {
 		return nil, err
 	}
@@ -3089,7 +3203,7 @@ func (client IdentityClient) ListIdpGroupMappings(ctx context.Context, request L
 
 // listIdpGroupMappings implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listIdpGroupMappings(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders/{identityProviderId}/groupMappings/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders/{identityProviderId}/groupMappings")
 	if err != nil {
 		return nil, err
 	}
@@ -3177,7 +3291,7 @@ func (client IdentityClient) ListPolicies(ctx context.Context, request ListPolic
 
 // listPolicies implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listPolicies(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/policies/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/policies")
 	if err != nil {
 		return nil, err
 	}
@@ -3298,7 +3412,7 @@ func (client IdentityClient) ListSmtpCredentials(ctx context.Context, request Li
 
 // listSmtpCredentials implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listSmtpCredentials(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/smtpCredentials/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/smtpCredentials")
 	if err != nil {
 		return nil, err
 	}
@@ -3342,7 +3456,7 @@ func (client IdentityClient) ListSwiftPasswords(ctx context.Context, request Lis
 
 // listSwiftPasswords implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listSwiftPasswords(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/swiftPasswords/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/swiftPasswords")
 	if err != nil {
 		return nil, err
 	}
@@ -3444,6 +3558,132 @@ func (client IdentityClient) listTagNamespaces(ctx context.Context, request comm
 	return response, err
 }
 
+// ListTaggingWorkRequestErrors Gets the errors for a work request.
+func (client IdentityClient) ListTaggingWorkRequestErrors(ctx context.Context, request ListTaggingWorkRequestErrorsRequest) (response ListTaggingWorkRequestErrorsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listTaggingWorkRequestErrors, policy)
+	if err != nil {
+		if ociResponse != nil {
+			response = ListTaggingWorkRequestErrorsResponse{RawResponse: ociResponse.HTTPResponse()}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListTaggingWorkRequestErrorsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListTaggingWorkRequestErrorsResponse")
+	}
+	return
+}
+
+// listTaggingWorkRequestErrors implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) listTaggingWorkRequestErrors(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/taggingWorkRequests/{workRequestId}/errors")
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListTaggingWorkRequestErrorsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListTaggingWorkRequestLogs Gets the logs for a work request.
+func (client IdentityClient) ListTaggingWorkRequestLogs(ctx context.Context, request ListTaggingWorkRequestLogsRequest) (response ListTaggingWorkRequestLogsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listTaggingWorkRequestLogs, policy)
+	if err != nil {
+		if ociResponse != nil {
+			response = ListTaggingWorkRequestLogsResponse{RawResponse: ociResponse.HTTPResponse()}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListTaggingWorkRequestLogsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListTaggingWorkRequestLogsResponse")
+	}
+	return
+}
+
+// listTaggingWorkRequestLogs implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) listTaggingWorkRequestLogs(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/taggingWorkRequests/{workRequestId}/logs")
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListTaggingWorkRequestLogsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListTaggingWorkRequests Lists the tagging work requests in compartment.
+func (client IdentityClient) ListTaggingWorkRequests(ctx context.Context, request ListTaggingWorkRequestsRequest) (response ListTaggingWorkRequestsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listTaggingWorkRequests, policy)
+	if err != nil {
+		if ociResponse != nil {
+			response = ListTaggingWorkRequestsResponse{RawResponse: ociResponse.HTTPResponse()}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListTaggingWorkRequestsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListTaggingWorkRequestsResponse")
+	}
+	return
+}
+
+// listTaggingWorkRequests implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) listTaggingWorkRequests(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/taggingWorkRequests")
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListTaggingWorkRequestsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // ListTags Lists the tag definitions in the specified tag namespace.
 func (client IdentityClient) ListTags(ctx context.Context, request ListTagsRequest) (response ListTagsResponse, err error) {
 	var ociResponse common.OCIResponse
@@ -3494,7 +3734,7 @@ func (client IdentityClient) listTags(ctx context.Context, request common.OCIReq
 // - Similarly, you can limit the results to just the memberships for a given group by specifying a `groupId`.
 // - You can set both the `userId` and `groupId` to determine if the specified user is in the specified group.
 // If the answer is no, the response is an empty list.
-// - Although`userId` and `groupId` are not indvidually required, you must set one of them.
+// - Although`userId` and `groupId` are not individually required, you must set one of them.
 func (client IdentityClient) ListUserGroupMemberships(ctx context.Context, request ListUserGroupMembershipsRequest) (response ListUserGroupMembershipsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
@@ -3518,7 +3758,7 @@ func (client IdentityClient) ListUserGroupMemberships(ctx context.Context, reque
 
 // listUserGroupMemberships implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listUserGroupMemberships(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/userGroupMemberships/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/userGroupMemberships")
 	if err != nil {
 		return nil, err
 	}
@@ -3562,7 +3802,7 @@ func (client IdentityClient) ListUsers(ctx context.Context, request ListUsersReq
 
 // listUsers implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listUsers(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users")
 	if err != nil {
 		return nil, err
 	}
@@ -3604,7 +3844,7 @@ func (client IdentityClient) ListWorkRequests(ctx context.Context, request ListW
 
 // listWorkRequests implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) listWorkRequests(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/")
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests")
 	if err != nil {
 		return nil, err
 	}
@@ -3622,7 +3862,13 @@ func (client IdentityClient) listWorkRequests(ctx context.Context, request commo
 	return response, err
 }
 
-// MoveCompartment Move the compartment tree to a different parent compartment.
+// MoveCompartment Move the compartment to a different parent compartment in the same tenancy. When you move a
+// compartment, all its contents (subcompartments and resources) are moved with it. Note that
+// the `CompartmentId` that you specify in the path is the compartment that you want to move.
+// **IMPORTANT**: After you move a compartment to a new parent compartment, the access policies of
+// the new parent take effect and the policies of the previous parent no longer apply. Ensure that you
+// are aware of the implications for the compartment contents before you move it. For more
+// information, see Moving a Compartment (https://docs.cloud.oracle.com/Content/Identity/Tasks/managingcompartments.htm#MoveCompartment).
 func (client IdentityClient) MoveCompartment(ctx context.Context, request MoveCompartmentRequest) (response MoveCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
@@ -3657,6 +3903,48 @@ func (client IdentityClient) moveCompartment(ctx context.Context, request common
 	}
 
 	var response MoveCompartmentResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// RecoverCompartment Recover the compartment from DELETED state to ACTIVE state.
+func (client IdentityClient) RecoverCompartment(ctx context.Context, request RecoverCompartmentRequest) (response RecoverCompartmentResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.recoverCompartment, policy)
+	if err != nil {
+		if ociResponse != nil {
+			response = RecoverCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(RecoverCompartmentResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into RecoverCompartmentResponse")
+	}
+	return
+}
+
+// recoverCompartment implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) recoverCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/compartments/{compartmentId}/actions/recoverCompartment")
+	if err != nil {
+		return nil, err
+	}
+
+	var response RecoverCompartmentResponse
 	var httpResponse *http.Response
 	httpResponse, err = client.Call(ctx, &httpRequest)
 	defer common.CloseBodyIfValid(httpResponse)
@@ -3735,7 +4023,7 @@ func (client IdentityClient) ResetIdpScimClient(ctx context.Context, request Res
 
 // resetIdpScimClient implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) resetIdpScimClient(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/identityProviders/{identityProviderId}/actions/resetScimClient/")
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/identityProviders/{identityProviderId}/actions/resetScimClient")
 	if err != nil {
 		return nil, err
 	}
@@ -4217,7 +4505,14 @@ func (client IdentityClient) updateSwiftPassword(ctx context.Context, request co
 	return response, err
 }
 
-// UpdateTag Updates the the specified tag definition. You can update `description`, and `isRetired`.
+// UpdateTag Updates the specified tag definition.
+// Setting `validator` determines the value type. Tags can use either a static value or a
+// list of possible values. Static values are entered by a user applying the tag to a resource.
+// Lists are created by you and the user must apply a value from the list. On update, any values
+// in a list that were previously set do not change, but new values must pass validation. Values
+// already applied to a resource do not change.
+// You cannot remove list values that appear in a TagDefault. To remove a list value that
+// appears in a TagDefault, first update the TagDefault to use a different value.
 func (client IdentityClient) UpdateTag(ctx context.Context, request UpdateTagRequest) (response UpdateTagResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
@@ -4259,7 +4554,11 @@ func (client IdentityClient) updateTag(ctx context.Context, request common.OCIRe
 	return response, err
 }
 
-// UpdateTagDefault Updates the specified tag default. You can update the following field: `value`.
+// UpdateTagDefault Updates the specified tag default. If you specify that a value is required, a value is set
+// during resource creation (either by the user creating the resource or another tag defualt).
+// If no value is set, resource creation is blocked.
+// * If the `isRequired` flag is set to "true", the value is set during resource creation.
+// * If the `isRequired` flag is set to "false", the value you enter is set during resource creation.
 func (client IdentityClient) UpdateTagDefault(ctx context.Context, request UpdateTagDefaultRequest) (response UpdateTagDefaultResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
@@ -4304,7 +4603,7 @@ func (client IdentityClient) updateTagDefault(ctx context.Context, request commo
 // UpdateTagNamespace Updates the the specified tag namespace. You can't update the namespace name.
 // Updating `isRetired` to 'true' retires the namespace and all the tag definitions in the namespace. Reactivating a
 // namespace (changing `isRetired` from 'true' to 'false') does not reactivate tag definitions.
-// To reactivate the tag definitions, you must reactivate each one indvidually *after* you reactivate the namespace,
+// To reactivate the tag definitions, you must reactivate each one individually *after* you reactivate the namespace,
 // using UpdateTag. For more information about retiring tag namespaces, see
 // Retiring Key Definitions and Namespace Definitions (https://docs.cloud.oracle.com/Content/Identity/Concepts/taggingoverview.htm#Retiring).
 // You can't add a namespace with the same name as a retired namespace in the same tenancy.
@@ -4415,7 +4714,7 @@ func (client IdentityClient) UpdateUserCapabilities(ctx context.Context, request
 
 // updateUserCapabilities implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) updateUserCapabilities(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/capabilities/")
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/capabilities")
 	if err != nil {
 		return nil, err
 	}
@@ -4457,7 +4756,7 @@ func (client IdentityClient) UpdateUserState(ctx context.Context, request Update
 
 // updateUserState implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) updateUserState(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/state/")
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/state")
 	if err != nil {
 		return nil, err
 	}
@@ -4515,7 +4814,7 @@ func (client IdentityClient) UploadApiKey(ctx context.Context, request UploadApi
 
 // uploadApiKey implements the OCIOperation interface (enables retrying operations)
 func (client IdentityClient) uploadApiKey(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/apiKeys/")
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/apiKeys")
 	if err != nil {
 		return nil, err
 	}
