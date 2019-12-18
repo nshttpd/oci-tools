@@ -1,4 +1,4 @@
-box: golang:1.12
+box: golang:1.13
 build:
   steps:
 #    - wercker/golint@1.4.1:
