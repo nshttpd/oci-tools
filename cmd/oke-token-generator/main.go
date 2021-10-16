@@ -12,7 +12,7 @@ import (
 
 	"github.com/mitchellh/go-homedir"
 
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v49/common"
 	flag "github.com/spf13/pflag"
 )
 

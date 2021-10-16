@@ -40,7 +40,7 @@ import (
 	"oci-tools/oci"
 	"oci-tools/utils"
 
-	"github.com/oracle/oci-go-sdk/identity"
+	"github.com/oracle/oci-go-sdk/v49/identity"
 	"github.com/spf13/cobra"
 )
 

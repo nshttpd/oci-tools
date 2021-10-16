@@ -9,8 +9,8 @@ import (
 
 	"fmt"
 
-	"github.com/oracle/oci-go-sdk/core"
-	"github.com/oracle/oci-go-sdk/identity"
+	"github.com/oracle/oci-go-sdk/v49/core"
+	"github.com/oracle/oci-go-sdk/v49/identity"
 )
 
 // a conglomeration of things that make up a OCI Instance, the instance itself, VNICs
