@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/oracle/oci-go-sdk/identity"
+	"github.com/oracle/oci-go-sdk/v49/identity"
 )
 
 type Compartments struct {
